@@ -209,6 +209,7 @@ Tags for categorizing tasks.
 - `color`: String (Hex code, e.g., `#FF5733`)
 
 #### `TaskLabel` (Pivot Table)
+- `id`: UUID (Primary Key)
 - `task_id`: UUID (Foreign Key -> Task.id)
 - `label_id`: UUID (Foreign Key -> Label.id)
 
