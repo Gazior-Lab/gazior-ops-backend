@@ -43,6 +43,22 @@ class CycleStatus(PyEnum):
     ACTIVE = "ACTIVE"
     COMPLETED = "COMPLETED"
 
+# - `status`: Enum (`BACKLOG`, `TODO`, `IN_PROGRESS`, `IN_REVIEW`, `DONE`, `CANCELED`) (default `BACKLOG`)
+
+class TaskStatus(PyEnum):
+    BACKLOG = "BACKLOG"
+    TODO = "TODO"
+    IN_PROGRESS = "IN_PROGRESS"
+    IN_REVIEW = "IN_REVIEW"
+    DONE = "DONE"
+    CANCELED = "CANCELED"
+
+class TaskPriority(PyEnum):
+    URGENT = "URGENT"
+    HIGH = "HIGH"
+    MEDIUM = "MEDIUM"
+    LOW = "LOW"
+    NONE = "NONE"
 
 # UserRoleEnum
 # WorkspaceRoleEnum

@@ -4,6 +4,7 @@ from enum import Enum
 from sqlalchemy import Enum as SQLEnum
 from app.db.database import Base
 
+
 class WorkspaceMemberRole(Enum):
     OWNER = "OWNER"
     ADMIN = "ADMIN"
@@ -12,18 +13,17 @@ class WorkspaceMemberRole(Enum):
     GUEST = "GUEST"
 
 
-
 class WorkspaceMember(Base):
     __tablename__ = "workspace_members"
-    
+
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     workspace_id: Mapped[int] = mapped_column(ForeignKey("workspaces.id"), nullable=False, index=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
-    role: Mapped[WorkspaceMemberRole] = mapped_column(SQLEnum(WorkspaceMemberRole),nullable=False)
+    role: Mapped[WorkspaceMemberRole] = mapped_column(SQLEnum(WorkspaceMemberRole), nullable=False)
     joined_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     deleted_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), nullable=True)
 
-    # server_default
+    # Server default timestamps
     created_at: Mapped[DateTime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),

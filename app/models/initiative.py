@@ -6,7 +6,7 @@ from app.core.enums.common import InitiativeHealthStatus
 
 class Initiative(Base):
     __tablename__ = "initiatives"
-    
+
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     workspace_id: Mapped[int] = mapped_column(ForeignKey("workspaces.id"), nullable=False, index=True)
     name: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
@@ -16,7 +16,7 @@ class Initiative(Base):
     progress_percentage: Mapped[int] = mapped_column(nullable=False, default=0)
     deleted_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), nullable=True)
 
-    # server_default
+    # Server default timestamps
     created_at: Mapped[DateTime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
@@ -29,6 +29,6 @@ class Initiative(Base):
         nullable=False,
     )
 
-    # foreign keys and relationships
+    # Audit fields
     created_by_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=True)
     updated_by_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=True)

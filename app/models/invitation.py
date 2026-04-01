@@ -1,14 +1,12 @@
 from sqlalchemy import String, Enum, DateTime, func, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
-from enum import Enum as PyEnum
 from app.db.database import Base
 from app.core.enums.common import InvitationStatus, WorkspaceMemberRole
 
 
-
 class Invitation(Base):
     __tablename__ = "invitations"
-    
+
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     workspace_id: Mapped[int] = mapped_column(ForeignKey("workspaces.id"), nullable=False, index=True)
     inviter_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
@@ -20,7 +18,7 @@ class Invitation(Base):
     accepted_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), nullable=True)
     deleted_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), nullable=True)
 
-    # server_default
+    # Server default timestamps
     created_at: Mapped[DateTime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
@@ -33,6 +31,6 @@ class Invitation(Base):
         nullable=False,
     )
 
-    # foreign keys and relationships
+    # Audit fields
     created_by_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=True)
     updated_by_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=True)

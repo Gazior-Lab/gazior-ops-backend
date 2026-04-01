@@ -1,4 +1,4 @@
-from sqlalchemy import String, DateTime, func, ForeignKey,Enum
+from sqlalchemy import String, DateTime, func, ForeignKey, Enum
 from sqlalchemy.orm import Mapped, mapped_column
 from app.db.database import Base
 from app.core.enums.common import ProjectStatus, ProjectVisibility
@@ -6,7 +6,7 @@ from app.core.enums.common import ProjectStatus, ProjectVisibility
 
 class Project(Base):
     __tablename__ = "projects"
-    
+
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     workspace_id: Mapped[int] = mapped_column(ForeignKey("workspaces.id"), nullable=False, index=True)
     name: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
@@ -18,7 +18,7 @@ class Project(Base):
     status_changed_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), nullable=True)
     deleted_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), nullable=True)
 
-    # server_default
+    # Server default timestamps
     created_at: Mapped[DateTime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
@@ -31,6 +31,6 @@ class Project(Base):
         nullable=False,
     )
 
-    # foreign keys and relationships
+    # Audit fields
     created_by_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=True)
     updated_by_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=True)

@@ -1,6 +1,7 @@
-from sqlalchemy import String, Boolean, DateTime, func,ForeignKey
+from sqlalchemy import String, Boolean, DateTime, func, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 from app.db.database import Base
+
 
 class User(Base):
     __tablename__ = "users"
@@ -13,11 +14,9 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, server_default="true")
     is_superadmin: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
     last_login: Mapped[DateTime] = mapped_column(DateTime(timezone=True), nullable=True)
-    last_login: Mapped[DateTime] = mapped_column(DateTime(timezone=True), nullable=True)
     deleted_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), nullable=True)
 
-
-    # server_default 
+    # Server default timestamps
     created_at: Mapped[DateTime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
@@ -30,6 +29,6 @@ class User(Base):
         nullable=False,
     )
 
-    # foreign keys and relationships
+    # Audit fields
     created_by_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=True)
     updated_by_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=True)
