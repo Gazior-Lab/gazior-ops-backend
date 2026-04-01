@@ -83,13 +83,21 @@ Groups users into functional units (e.g., 'Engineering', 'Design').
 - `lead_id`: UUID (Foreign Key -> User.id, Nullable)
 - `created_at`: DateTime
 - `updated_at`: DateTime
-- `deleted_at`: DateTime (Nullable)
+- `deleted_at`: DateTime (Nullable) 
 - `created_by_id`: UUID (Foreign Key -> User.id, Nullable)
 - `updated_by_id`: UUID (Foreign Key -> User.id, Nullable)
 
 #### `TeamMember` (Pivot Table)
+- `id` UUID (Primary Key)
 - `team_id`: UUID (Foreign Key -> Team.id)
 - `user_id`: UUID (Foreign Key -> User.id)
+- `role`: Sring
+- `created_at`: DateTime
+- `updated_at`: DateTime
+- `deleted_at`: DateTime (Nullable) 
+- `created_by_id`: UUID (Foreign Key -> User.id, Nullable)
+- `updated_by_id`: UUID (Foreign Key -> User.id, Nullable)
+
 
 ### 2. Organization & Workflow
 
