@@ -20,6 +20,7 @@ The root container for all projects, users, and settings.
 - `slug`: String (Unique, e.g., `gazior-rnd`)
 - `logo_url`: String (Nullable)
 - `timezone`: String (default `UTC`)
+- `description`: String(nullable)
 - `created_at`: DateTime
 - `updated_at`: DateTime
 - `deleted_at`: DateTime (Nullable)
