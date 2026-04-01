@@ -37,7 +37,7 @@ class Task(Base):
     deleted_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), nullable=True)
 
 
-    #server default
+    #server default timestamps
     created_at: Mapped[DateTime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
@@ -50,6 +50,6 @@ class Task(Base):
         nullable=False,
     )
 
-    # foreign keys and relationships
+    # audit fields
     created_by_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=True)
     updated_by_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=True)
