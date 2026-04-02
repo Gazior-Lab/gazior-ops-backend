@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app import models
 from app.core import security
@@ -11,8 +11,9 @@ from app.utils.password import Hash
 class AuthService:
 
     @staticmethod
-    def authenticate_user(db: Session, email: str, password: str):
-        user = UserRepository.get_by_email(db, email=email)
+    async def authenticate_user(db: AsyncSession, email: str, password: str):
+        user_repo = UserRepository(db)
+        user = await user_repo.get_by_email(email=email)
         if not user:
             return None
         if not Hash.verify_password(password, user.hashed_password):
