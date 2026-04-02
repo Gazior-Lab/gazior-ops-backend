@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from app.core.config import settings
 from app.db.database import engine
+from app.api.endpoints.v1 import auth
 
 
 @asynccontextmanager
@@ -19,6 +20,11 @@ app = FastAPI(
     title="Gazior Ops API",
     version="1.0.0",
     lifespan=lifespan,
+)
+
+app.include_router(
+    auth.router,
+    prefix="/api/v1",
 )
 
 @app.get('/')
