@@ -1,13 +1,17 @@
+from uuid import UUID
+from datetime import datetime, timezone
 
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+
 from app.models.user import User
+
 
 class UserRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def get_by_id(self, user_id: int) -> User | None:
+    async def get_by_id(self, user_id: UUID) -> User | None:
         result = await self.db.execute(
             select(User).where(User.id == user_id)
         )
@@ -15,7 +19,7 @@ class UserRepository:
 
     async def get_by_email(self, email: str) -> User | None:
         result = await self.db.execute(
-            select(User).where(User.email == email)
+            select(User).where(func.lower(User.email) == email.lower())
         )
         return result.scalar_one_or_none()
 
@@ -23,13 +27,30 @@ class UserRepository:
         result = await self.db.execute(
             select(User).offset(skip).limit(limit)
         )
-        return list(result.scalars().all())
+        return result.scalars().all()
 
-    async def create(self, email: str, name: str, hashed_password: str) -> User:
-        user = User(email=email, name=name, hashed_password=hashed_password)
+    async def create(
+        self,
+        email: str,
+        full_name: str,
+        hashed_password: str,
+        avatar_url: str | None = None,
+    ) -> User:
+        user = User(
+            email=email.lower(),
+            full_name=full_name,
+            hashed_password=hashed_password,
+            avatar_url=avatar_url,
+        )
         self.db.add(user)
-        await self.db.flush()    # flush → get DB-generated id without full commit
-        await self.db.refresh(user)  # refresh → load server_defaults (timestamps)
+        await self.db.flush()
+        await self.db.refresh(user)
+        return user
+
+    async def update_last_login(self, user: User) -> User:
+        user.last_login = datetime.now(timezone.utc)
+        await self.db.flush()
+        await self.db.refresh(user)
         return user
 
     async def delete(self, user: User) -> None:
