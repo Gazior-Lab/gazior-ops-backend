@@ -1,6 +1,5 @@
 # app/api/endpoints/v1/task.py
-from uuid import UUID
-from typing import Dict, Dict, Optional, List
+from typing import Dict, Optional, List
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -24,11 +23,11 @@ router = APIRouter(prefix="/tasks", tags=["tasks"])
 async def list_tasks(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=500),
-    workspace_id: Optional[UUID] = None,
-    project_id: Optional[UUID] = None,
-    cycle_id: Optional[UUID] = None,
+    workspace_id: Optional[int] = None,
+    project_id: Optional[int] = None,
+    cycle_id: Optional[int] = None,
     status: Optional[TaskStatus] = None,
-    assignee_id: Optional[UUID] = None,
+    assignee_id: Optional[int] = None,
     priority: Optional[TaskPriority] = None,
     search: Optional[str] = None,
     db: AsyncSession = Depends(get_db),
@@ -54,7 +53,7 @@ async def list_tasks(
 
 @router.get("/{task_id}", response_model=TaskResponse)
 async def get_task(
-    task_id: UUID,
+    task_id: int,
     db: AsyncSession = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
@@ -118,7 +117,7 @@ async def create_task(
 
 @router.patch("/{task_id}", response_model=TaskResponse)
 async def update_task(
-    task_id: UUID,
+    task_id: int,
     task_data: TaskUpdate,
     db: AsyncSession = Depends(get_db),
     current_user=Depends(get_current_user),
@@ -143,7 +142,7 @@ async def update_task(
 
 @router.delete("/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_task(
-    task_id: UUID,
+    task_id: int,
     db: AsyncSession = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
@@ -164,7 +163,7 @@ async def delete_task(
 
 @router.post("/{task_id}/archive", response_model=TaskResponse)
 async def archive_task(
-    task_id: UUID,
+    task_id: int,
     db: AsyncSession = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
@@ -187,7 +186,7 @@ async def archive_task(
 
 @router.post("/{task_id}/unarchive", response_model=TaskResponse)
 async def unarchive_task(
-    task_id: UUID,
+    task_id: int,
     db: AsyncSession = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
@@ -210,8 +209,8 @@ async def unarchive_task(
 
 @router.post("/bulk/status", response_model=Dict[str, int])
 async def bulk_update_status(
-    task_ids: List[UUID],
-    status: TaskStatus,
+    task_ids: List[int],
+    new_status: TaskStatus = Query(...),
     db: AsyncSession = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
@@ -226,7 +225,7 @@ async def bulk_update_status(
 
     updated_count = await task_service.bulk_update_status(
         task_ids=task_ids,
-        status=status,
+        status=new_status,
         current_user_id=current_user.id
     )
 

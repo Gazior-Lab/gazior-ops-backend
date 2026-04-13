@@ -1,5 +1,4 @@
 # app/repositories/task.py
-from uuid import UUID
 from datetime import datetime, timezone
 from typing import Optional, List, Dict, Any
 
@@ -14,7 +13,7 @@ class TaskRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def get_by_id(self, task_id: UUID) -> Optional[Task]:
+    async def get_by_id(self, task_id: int) -> Optional[Task]:
         """Get task by ID (excludes soft-deleted)"""
         result = await self.db.execute(
             select(Task).where(
@@ -34,7 +33,7 @@ class TaskRepository:
         )
         return result.scalar_one_or_none()
 
-    async def get_next_task_number(self, project_id: UUID) -> int:
+    async def get_next_task_number(self, project_id: int) -> int:
         """Get next sequential task number for a project"""
         result = await self.db.execute(
             select(func.max(Task.number)).where(
@@ -49,11 +48,11 @@ class TaskRepository:
         self,
         skip: int = 0,
         limit: int = 100,
-        workspace_id: Optional[UUID] = None,
-        project_id: Optional[UUID] = None,
-        cycle_id: Optional[UUID] = None,
+        workspace_id: Optional[int] = None,
+        project_id: Optional[int] = None,
+        cycle_id: Optional[int] = None,
         status: Optional[TaskStatus] = None,
-        assignee_id: Optional[UUID] = None,
+        assignee_id: Optional[int] = None,
         priority: Optional[TaskPriority] = None,
         search: Optional[str] = None,
     ) -> tuple[List[Task], int]:
@@ -107,7 +106,7 @@ class TaskRepository:
         await self.db.refresh(task)
         return task
 
-    async def update(self, task_id: UUID, **kwargs) -> Optional[Task]:
+    async def update(self, task_id: int, **kwargs) -> Optional[Task]:
         """Update task fields"""
         task = await self.get_by_id(task_id)
         if not task:
@@ -125,7 +124,7 @@ class TaskRepository:
         await self.db.refresh(task)
         return task
 
-    async def soft_delete(self, task_id: UUID, deleted_by_id: UUID) -> bool:
+    async def soft_delete(self, task_id: int, deleted_by_id: int) -> bool:
         """Soft delete a task"""
         task = await self.get_by_id(task_id)
         if not task:
@@ -137,7 +136,7 @@ class TaskRepository:
         await self.db.commit()
         return True
 
-    async def hard_delete(self, task_id: UUID) -> bool:
+    async def hard_delete(self, task_id: int) -> bool:
         """Permanently delete a task (admin only)"""
         task = await self.get_by_id(task_id)
         if not task:
@@ -147,7 +146,7 @@ class TaskRepository:
         await self.db.commit()
         return True
 
-    async def archive(self, task_id: UUID, archived_by_id: UUID) -> Optional[Task]:
+    async def archive(self, task_id: int, archived_by_id: int) -> Optional[Task]:
         """Archive a task"""
         task = await self.get_by_id(task_id)
         if not task:
@@ -162,7 +161,7 @@ class TaskRepository:
         await self.db.refresh(task)
         return task
 
-    async def unarchive(self, task_id: UUID, updated_by_id: UUID) -> Optional[Task]:
+    async def unarchive(self, task_id: int, updated_by_id: int) -> Optional[Task]:
         """Unarchive a task"""
         task = await self.get_by_id(task_id)
         if not task:
@@ -179,9 +178,9 @@ class TaskRepository:
 
     async def bulk_update_status(
         self,
-        task_ids: List[UUID],
+        task_ids: List[int],
         status: TaskStatus,
-        updated_by_id: UUID
+        updated_by_id: int
     ) -> int:
         """Bulk update status for multiple tasks"""
         now = datetime.now(timezone.utc)
