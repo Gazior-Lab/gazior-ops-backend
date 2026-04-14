@@ -7,6 +7,7 @@ from app.core.config import settings
 from app.db.database import engine
 from app.api.endpoints.v1 import auth
 from app.api.endpoints.v1 import task
+from app.api.endpoints.v1 import workspace
 from app.core.exceptions import AppException
 
 @asynccontextmanager
@@ -65,6 +66,11 @@ app.include_router(
     auth.router,
     prefix="/api/v1",
 )
+app.include_router(
+    workspace.router,
+    prefix="/api/v1",
+)
+
 app.include_router(
     task.router,
     prefix="/api/v1",

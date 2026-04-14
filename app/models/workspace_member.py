@@ -1,16 +1,8 @@
 from sqlalchemy import String, DateTime, func, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
-from enum import Enum
 from sqlalchemy import Enum as SQLEnum
 from app.db.database import Base
-
-
-class WorkspaceMemberRole(Enum):
-    OWNER = "OWNER"
-    ADMIN = "ADMIN"
-    MEMBER = "MEMBER"
-    VIEWER = "VIEWER"
-    GUEST = "GUEST"
+from app.core.enums.common import WorkspaceMemberRole
 
 
 class WorkspaceMember(Base):
