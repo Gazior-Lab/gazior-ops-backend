@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.repositories.task import TaskRepository
 from app.models.task import Task
 from app.schemas.task import TaskCreate, TaskUpdate
-from app.core.enums.common import TaskStatus
+from app.core.enums.common import TaskStatus, TaskPriority
 
 
 class TaskService:
@@ -32,7 +32,7 @@ class TaskService:
         cycle_id: Optional[int] = None,
         status: Optional[TaskStatus] = None,
         assignee_id: Optional[int] = None,
-        priority: Optional[TaskStatus] = None,
+        priority: Optional[TaskPriority] = None,
         search: Optional[str] = None,
     ):
         """Get paginated tasks with filters"""

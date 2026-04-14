@@ -4,7 +4,7 @@ from typing import Dict, Optional, List
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.dependencies import get_db
+from app.api.dependencies import get_db, get_current_user, check_workspace_membership
 from app.services.task_service import TaskService
 from app.schemas.task import (
     TaskCreate,
@@ -13,7 +13,6 @@ from app.schemas.task import (
     TaskListResponse,
 )
 from app.core.enums.common import TaskStatus, TaskPriority
-from app.api.dependencies import get_current_user
 
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
@@ -51,27 +50,6 @@ async def list_tasks(
     return result
 
 
-@router.get("/{task_id}", response_model=TaskResponse)
-async def get_task(
-    task_id: int,
-    db: AsyncSession = Depends(get_db),
-    current_user=Depends(get_current_user),
-):
-    """Get a specific task by ID"""
-    task_service = TaskService(db)
-    task = await task_service.get_task(task_id)
-
-    if not task:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Task not found"
-        )
-
-    # TODO: Add permission check (user must have access to workspace/project)
-
-    return task
-
-
 @router.get("/identifier/{identifier}", response_model=TaskResponse)
 async def get_task_by_identifier(
     identifier: str,
@@ -88,6 +66,39 @@ async def get_task_by_identifier(
             detail="Task not found"
         )
 
+    # Verify user has access to the workspace this task belongs to
+    await check_workspace_membership(
+        workspace_id=task.workspace_id,
+        db=db,
+        current_user=current_user,
+    )
+
+    return task
+
+
+@router.get("/{task_id}", response_model=TaskResponse)
+async def get_task(
+    task_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    """Get a specific task by ID"""
+    task_service = TaskService(db)
+    task = await task_service.get_task(task_id)
+
+    if not task:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Task not found"
+        )
+
+    # Verify user has access to the workspace this task belongs to
+    await check_workspace_membership(
+        workspace_id=task.workspace_id,
+        db=db,
+        current_user=current_user,
+    )
+
     return task
 
 
@@ -97,10 +108,15 @@ async def create_task(
     db: AsyncSession = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
-    """Create a new task"""
-    # TODO: Validate user has permission to create task in this workspace/project
-
+    """Create a new task (requires workspace membership)"""
     task_service = TaskService(db)
+
+    # Verify user has access to the workspace
+    workspace_access = await check_workspace_membership(
+        workspace_id=task_data.workspace_id,
+        db=db,
+        current_user=current_user,
+    )
 
     try:
         task = await task_service.create_task(
@@ -108,10 +124,13 @@ async def create_task(
             current_user_id=current_user.id
         )
         return task
+    except HTTPException:
+        raise
     except Exception as e:
+        # Don't expose internal error details to clients
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
+            detail="Failed to create task"
         )
 
 

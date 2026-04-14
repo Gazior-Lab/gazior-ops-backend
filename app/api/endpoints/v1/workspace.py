@@ -3,7 +3,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.dependencies import get_db, get_current_user
+from app.api.dependencies import get_db, get_current_user, check_workspace_membership
 from app.services.workspace_service import WorkspaceService
 from app.schemas.workspace import (
     WorkspaceCreate,
@@ -59,36 +59,6 @@ async def get_my_workspaces(
     return result
 
 
-@router.get("/{workspace_id}", response_model=WorkspaceWithMembers)
-async def get_workspace(
-    workspace_id: int,
-    db: AsyncSession = Depends(get_db),
-    current_user=Depends(get_current_user),
-):
-    """Get a specific workspace by ID with its members"""
-    workspace_service = WorkspaceService(db)
-    workspace = await workspace_service.get_workspace(workspace_id)
-
-    if not workspace:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Workspace not found"
-        )
-
-    # Get workspace members
-    members_result = await workspace_service.get_workspace_members(
-        workspace_id=workspace_id,
-        skip=0,
-        limit=1000,
-    )
-
-    # Combine workspace with members
-    return WorkspaceWithMembers(
-        **workspace.__dict__,
-        members=members_result["members"],
-    )
-
-
 @router.get("/slug/{slug}", response_model=WorkspaceResponse)
 async def get_workspace_by_slug(
     slug: str,
@@ -105,7 +75,62 @@ async def get_workspace_by_slug(
             detail="Workspace not found"
         )
 
+    # Verify user has access to this workspace
+    await check_workspace_membership(
+        workspace_id=workspace.id,
+        db=db,
+        current_user=current_user,
+    )
+
     return workspace
+
+
+@router.get("/{workspace_id}", response_model=WorkspaceWithMembers)
+async def get_workspace(
+    workspace_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    """Get a specific workspace by ID with its members"""
+    workspace_service = WorkspaceService(db)
+    workspace = await workspace_service.get_workspace(workspace_id)
+
+    if not workspace:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Workspace not found"
+        )
+
+    # Verify user has access to this workspace
+    await check_workspace_membership(
+        workspace_id=workspace_id,
+        db=db,
+        current_user=current_user,
+    )
+
+    # Get workspace members
+    members_result = await workspace_service.get_workspace_members(
+        workspace_id=workspace_id,
+        skip=0,
+        limit=1000,
+    )
+
+    # Combine workspace with members using proper serialization
+    workspace_dict = {
+        "id": workspace.id,
+        "name": workspace.name,
+        "slug": workspace.slug,
+        "logo_url": workspace.logo_url,
+        "timezone": workspace.timezone,
+        "description": workspace.description,
+        "created_at": workspace.created_at,
+        "updated_at": workspace.updated_at,
+        "created_by_id": workspace.created_by_id,
+        "updated_by_id": workspace.updated_by_id,
+        "members": members_result["members"],
+    }
+    
+    return WorkspaceWithMembers(**workspace_dict)
 
 
 @router.post("", response_model=WorkspaceResponse, status_code=status.HTTP_201_CREATED)
@@ -129,9 +154,10 @@ async def create_workspace(
     except HTTPException:
         raise
     except Exception as e:
+        # Don't expose internal error details to clients
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
+            detail="Failed to create workspace"
         )
 
 
@@ -143,6 +169,13 @@ async def update_workspace(
     current_user=Depends(get_current_user),
 ):
     """Update a workspace (requires OWNER or ADMIN role)"""
+    # Verify user has access to this workspace
+    await check_workspace_membership(
+        workspace_id=workspace_id,
+        db=db,
+        current_user=current_user,
+    )
+
     workspace_service = WorkspaceService(db)
 
     workspace = await workspace_service.update_workspace(
@@ -170,6 +203,13 @@ async def delete_workspace(
     Soft delete a workspace.
     Only the workspace OWNER can perform this action.
     """
+    # Verify user has access to this workspace
+    await check_workspace_membership(
+        workspace_id=workspace_id,
+        db=db,
+        current_user=current_user,
+    )
+
     workspace_service = WorkspaceService(db)
 
     success = await workspace_service.delete_workspace(
@@ -195,7 +235,14 @@ async def list_workspace_members(
     db: AsyncSession = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
-    """Get all members of a workspace"""
+    """Get all members of a workspace (requires workspace membership)"""
+    # Verify user has access to this workspace
+    await check_workspace_membership(
+        workspace_id=workspace_id,
+        db=db,
+        current_user=current_user,
+    )
+
     workspace_service = WorkspaceService(db)
     result = await workspace_service.get_workspace_members(
         workspace_id=workspace_id,
@@ -224,6 +271,13 @@ async def add_workspace_member(
     Add a member to a workspace.
     Requires OWNER or ADMIN role.
     """
+    # Verify user has access to this workspace
+    await check_workspace_membership(
+        workspace_id=workspace_id,
+        db=db,
+        current_user=current_user,
+    )
+
     workspace_service = WorkspaceService(db)
 
     try:
@@ -237,9 +291,10 @@ async def add_workspace_member(
     except HTTPException:
         raise
     except Exception as e:
+        # Don't expose internal error details to clients
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
+            detail="Failed to add member"
         )
 
 
@@ -258,6 +313,13 @@ async def update_workspace_member(
     Update a member's role.
     Only the workspace OWNER can perform this action.
     """
+    # Verify user has access to this workspace
+    await check_workspace_membership(
+        workspace_id=workspace_id,
+        db=db,
+        current_user=current_user,
+    )
+
     workspace_service = WorkspaceService(db)
 
     member = await workspace_service.update_member_role(
@@ -290,6 +352,13 @@ async def remove_workspace_member(
     Remove a member from the workspace.
     Users can remove themselves, or OWNER/ADMIN can remove others.
     """
+    # Verify user has access to this workspace
+    await check_workspace_membership(
+        workspace_id=workspace_id,
+        db=db,
+        current_user=current_user,
+    )
+
     workspace_service = WorkspaceService(db)
 
     success = await workspace_service.remove_member(
@@ -312,6 +381,13 @@ async def get_workspace_stats(
     current_user=Depends(get_current_user),
 ):
     """Get workspace statistics"""
+    # Verify user has access to this workspace
+    await check_workspace_membership(
+        workspace_id=workspace_id,
+        db=db,
+        current_user=current_user,
+    )
+
     workspace_service = WorkspaceService(db)
     stats = await workspace_service.get_workspace_stats(workspace_id)
     return stats
