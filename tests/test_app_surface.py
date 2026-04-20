@@ -27,6 +27,9 @@ EXPECTED_ROUTE_METHODS = {
     ("POST", "/api/v1/workspaces/{workspace_id}/members"),
     ("PATCH", "/api/v1/workspaces/{workspace_id}/members/{user_id}"),
     ("DELETE", "/api/v1/workspaces/{workspace_id}/members/{user_id}"),
+    ("GET", "/api/v1/workspaces/{workspace_id}/invitations"),
+    ("POST", "/api/v1/workspaces/{workspace_id}/invitations"),
+    ("DELETE", "/api/v1/workspaces/{workspace_id}/invitations/{invitation_id}"),
     ("GET", "/api/v1/workspaces/{workspace_id}/stats"),
     # tasks
     ("GET", "/api/v1/tasks"),

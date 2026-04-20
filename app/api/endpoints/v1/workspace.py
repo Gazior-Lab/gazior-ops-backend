@@ -14,6 +14,12 @@ from app.schemas.workspace import (
     WorkspaceMemberResponse,
     WorkspaceMemberListResponse,
 )
+from app.schemas.invitation import (
+    InvitationCreate,
+    InvitationCreatedResponse,
+    InvitationListResponse,
+)
+from app.services.invitation_service import InvitationService
 from app.core.enums.common import WorkspaceMemberRole
 
 
@@ -372,6 +378,81 @@ async def remove_workspace_member(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Member not found"
         )
+
+
+@router.get(
+    "/{workspace_id}/invitations",
+    response_model=InvitationListResponse,
+)
+async def list_workspace_invitations(
+    workspace_id: int,
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=500),
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    """List pending and past invitations for a workspace (OWNER or ADMIN)."""
+    await check_workspace_membership(
+        workspace_id=workspace_id,
+        db=db,
+        current_user=current_user,
+    )
+    invitation_service = InvitationService(db)
+    return await invitation_service.list_invitations(
+        workspace_id=workspace_id,
+        current_user_id=current_user.id,
+        skip=skip,
+        limit=limit,
+    )
+
+
+@router.post(
+    "/{workspace_id}/invitations",
+    response_model=InvitationCreatedResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_workspace_invitation(
+    workspace_id: int,
+    body: InvitationCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    """Create an email invitation to join the workspace (OWNER or ADMIN)."""
+    await check_workspace_membership(
+        workspace_id=workspace_id,
+        db=db,
+        current_user=current_user,
+    )
+    invitation_service = InvitationService(db)
+    return await invitation_service.create_invitation(
+        workspace_id=workspace_id,
+        data=body,
+        current_user_id=current_user.id,
+    )
+
+
+@router.delete(
+    "/{workspace_id}/invitations/{invitation_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def revoke_workspace_invitation(
+    workspace_id: int,
+    invitation_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    """Revoke an invitation (OWNER or ADMIN)."""
+    await check_workspace_membership(
+        workspace_id=workspace_id,
+        db=db,
+        current_user=current_user,
+    )
+    invitation_service = InvitationService(db)
+    await invitation_service.revoke_invitation(
+        workspace_id=workspace_id,
+        invitation_id=invitation_id,
+        current_user_id=current_user.id,
+    )
 
 
 @router.get("/{workspace_id}/stats")
