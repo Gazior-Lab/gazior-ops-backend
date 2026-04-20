@@ -8,8 +8,6 @@ from app.repositories.task import TaskRepository
 from app.models.task import Task
 from app.schemas.task import TaskCreate, TaskUpdate
 from app.core.enums.common import TaskStatus, TaskPriority
-
-
 class TaskService:
     def __init__(self, db: AsyncSession):
         self.db = db
@@ -128,3 +126,4 @@ class TaskService:
             "in_progress_tasks": 0,
             "overdue_tasks": 0,
         }
+        
