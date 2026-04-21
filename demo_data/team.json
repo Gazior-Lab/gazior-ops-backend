@@ -1,0 +1,78 @@
+{
+  "_notes": {
+    "list":            "GET  /api/v1/teams?workspace_id=1&skip=0&limit=100&search=optional",
+    "get":             "GET  /api/v1/teams/{team_id}",
+    "create":          "POST /api/v1/teams",
+    "update":          "PATCH /api/v1/teams/{team_id}",
+    "delete":          "DELETE /api/v1/teams/{team_id}",
+    "members_list":    "GET  /api/v1/teams/{team_id}/members?skip=0&limit=100",
+    "add_member":      "POST /api/v1/teams/{team_id}/members",
+    "update_member":   "PATCH /api/v1/teams/{team_id}/members/{user_id}",
+    "remove_member":   "DELETE /api/v1/teams/{team_id}/members/{user_id}"
+  },
+
+  "team_create": {
+    "name": "Engineering",
+    "workspace_id": 1,
+    "lead_id": 1
+  },
+
+  "team_create_design": {
+    "name": "Design",
+    "workspace_id": 1,
+    "lead_id": 2
+  },
+
+  "team_create_minimal": {
+    "name": "Operations",
+    "workspace_id": 1
+  },
+
+  "team_update": {
+    "name": "Platform Engineering",
+    "lead_id": 3
+  },
+
+  "team_update_name_only": {
+    "name": "Backend Engineering"
+  },
+
+  "team_update_lead_only": {
+    "lead_id": 2
+  },
+
+  "add_member_lead": {
+    "user_id": 2,
+    "role": "LEAD"
+  },
+
+  "add_member_member": {
+    "user_id": 3,
+    "role": "MEMBER"
+  },
+
+  "add_member_viewer": {
+    "user_id": 4,
+    "role": "VIEWER"
+  },
+
+  "update_member_role_to_lead": {
+    "role": "LEAD"
+  },
+
+  "update_member_role_to_viewer": {
+    "role": "VIEWER"
+  },
+
+  "list_query_paginated": {
+    "workspace_id": 1,
+    "skip": 0,
+    "limit": 20,
+    "search": "eng"
+  },
+
+  "members_list_query": {
+    "skip": 0,
+    "limit": 50
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "_description": "Replace these after you register users and create workspaces/projects in your environment.",
+  "base_url": "http://localhost:8000",
+  "user_ids": {
+    "owner": 1,
+    "member_to_invite": 2
+  },
+  "workspace_id": 1,
+  "workspace_slug": "gazior-demo",
+  "task_id": 1,
+  "invitation_id": 1,
+  "project_id": 1,
+  "cycle_id": null,
+  "parent_task_id": null
+}

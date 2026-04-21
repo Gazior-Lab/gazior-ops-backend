@@ -16,6 +16,12 @@ class WorkspaceMemberRole(PyEnum):
     GUEST = "GUEST"
 
 
+class TeamMemberRole(PyEnum):
+    LEAD = "LEAD"
+    MEMBER = "MEMBER"
+    VIEWER = "VIEWER"
+
+
 class InitiativeHealthStatus(PyEnum):
     ON_TRACK = "ON_TRACK"
     IN_REVIEW = "IN_REVIEW"

@@ -1,0 +1,24 @@
+{
+  "_notes": {
+    "list": "GET /api/v1/workspaces/{workspace_id}/invitations?skip=0&limit=100",
+    "create": "POST /api/v1/workspaces/{workspace_id}/invitations — application/json (OWNER or ADMIN)",
+    "revoke": "DELETE /api/v1/workspaces/{workspace_id}/invitations/{invitation_id}"
+  },
+  "invitation_create": {
+    "email": "newhire@gazior.local",
+    "role": "MEMBER",
+    "expires_in_days": 14
+  },
+  "invitation_create_admin_role": {
+    "email": "contractor@gazior.local",
+    "role": "ADMIN",
+    "expires_in_days": 7
+  },
+  "invitation_create_minimal": {
+    "email": "guest.user@example.com"
+  },
+  "list_query": {
+    "skip": 0,
+    "limit": 50
+  }
+}

@@ -8,7 +8,7 @@ from app.core.enums.common import TaskStatus, TaskPriority
 class Task(Base):
     __tablename__ = "tasks"
 
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
     workspace_id: Mapped[int] = mapped_column(ForeignKey("workspaces.id"), nullable=False, index=True)
     project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), nullable=False, index=True)
     cycle_id: Mapped[int] = mapped_column(ForeignKey("cycles.id"), nullable=True, index=True)

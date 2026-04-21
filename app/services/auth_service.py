@@ -35,14 +35,15 @@ class AuthService:
             raise DuplicateError(f"User with email {payload.email} already exists")
 
         hashed_password = Hash.hash_password(payload.password)
-        
+
         user = await self.user_repo.create(
             email=payload.email,
             full_name=payload.full_name,
             hashed_password=hashed_password
         )
-        
-        await self.db.commit()
+
+        # Don't commit here - get_db dependency will commit automatically
+        # Committing here causes double-commit issues
         return user
 
     @staticmethod
