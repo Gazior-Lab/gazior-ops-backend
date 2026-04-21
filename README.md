@@ -9,33 +9,74 @@ A scalable, production-ready backend system for **Gazior Ops** — a multi-tenan
 
 ## 📋 Table of Contents
 
-- [Features](#features)
-- [Tech Stack](#tech-stack)
+- [Changelog](#-changelog)
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
 - [Architecture](#-architecture-overview)
-- [Quick Start](#quick-start)
-- [API Documentation](#api-documentation)
-- [Database Models](#database-models)
-- [Environment Variables](#environment-variables)
-- [Development](#development)
-- [Testing](#testing)
-- [Project Structure](#project-structure)
-- [Security](#security)
+- [Quick Start](#-quick-start)
+- [API Documentation](#-api-documentation)
+- [Database Models](#️-database-models)
+- [Environment Variables](#-environment-variables)
+- [Development](#-development)
+- [Testing](#-testing)
+- [Project Structure](#-project-structure)
+- [Security](#-security)
+
+---
+
+## 📅 Changelog
+
+### `v1.2.0` — Team & Team Member API *(Latest)*
+
+- ✅ **New:** `GET /api/v1/teams` — List teams scoped to a workspace
+- ✅ **New:** `GET /api/v1/teams/{team_id}` — Get a single team by ID
+- ✅ **New:** `POST /api/v1/teams` — Create a team (OWNER/ADMIN only)
+- ✅ **New:** `PATCH /api/v1/teams/{team_id}` — Rename team or change lead
+- ✅ **New:** `DELETE /api/v1/teams/{team_id}` — Soft-delete a team
+- ✅ **New:** `GET /api/v1/teams/{team_id}/members` — List team members
+- ✅ **New:** `POST /api/v1/teams/{team_id}/members` — Add a user to a team
+- ✅ **New:** `PATCH /api/v1/teams/{team_id}/members/{user_id}` — Update member role
+- ✅ **New:** `DELETE /api/v1/teams/{team_id}/members/{user_id}` — Remove a member
+- ✅ **New:** `TeamMemberRole` enum (`LEAD`, `MEMBER`, `VIEWER`) in `core/enums/common.py`
+- ✅ **New:** `TeamRepository`, `TeamMemberRepository`, `TeamService`
+- ✅ **New:** Pydantic schemas for Team and TeamMember
+- ✅ **New:** Demo data in `demo_data/team.json`
+- ✅ **Updated:** `tests/test_app_surface.py` — 9 team routes verified in smoke test
+
+### `v1.1.0` — Task Management API
+
+- Full Task CRUD with filtering, pagination, and archiving
+- Bulk status update endpoint
+- Task identifier lookup (`/tasks/identifier/{identifier}`)
+- Task soft-delete with `deleted_at` tracking
+
+### `v1.0.0` — Foundation
+
+- JWT authentication (`register`, `login`, `me`)
+- Multi-tenant Workspaces with RBAC
+- Workspace member management (invite, update role, remove)
+- Workspace invitation workflow
+- Core layered architecture (API → Service → Repository → Model)
 
 ---
 
 ## ✨ Features
 
 ### Core Functionality
+
 - 🔐 **Authentication & Authorization** — JWT-based auth with OAuth2 password flow
 - 👥 **Multi-Tenant Workspaces** — RBAC with roles: OWNER, ADMIN, MEMBER, VIEWER, GUEST
 - ✅ **Task Management** — Full CRUD with filtering, pagination, bulk operations, and archiving
+- 🏢 **Team Management** — Create functional units (e.g., Engineering, Design) within workspaces; manage membership with LEAD / MEMBER / VIEWER roles
 - 🏗️ **Project Organization** — Projects, cycles, initiatives, and teams
 - 🏷️ **Labels & Tags** — Task categorization with custom labels
 - 💬 **Comments & Attachments** — Collaboration tools with markdown support
 - 📊 **Audit Trails** — Task history tracking and system audit logs
 
 ### Security Features
+
 - 🔒 **Workspace-level Authorization** — Every endpoint verifies workspace membership
+- 👮 **Team Admin Guard** — Team and TeamMember mutations require workspace OWNER or ADMIN
 - 🔑 **Password Validation** — Strength requirements (8+ chars, mixed case, digits)
 - 🛡️ **Soft Deletes** — All deletions are reversible with `deleted_at` tracking
 - 🔍 **Input Validation** — Strict Pydantic schemas on all request/response boundaries
@@ -177,9 +218,11 @@ The API will be available at:
 
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
-| POST | `/register` | Register a new user | No |
-| POST | `/login` | OAuth2 login for access token | No |
-| GET | `/me` | Get current user profile | Yes |
+| POST | `/auth/register` | Register a new user | No |
+| POST | `/auth/login` | OAuth2 login for access token | No |
+| GET | `/auth/me` | Get current user profile | Yes |
+
+---
 
 ### Workspace Endpoints (`/api/v1/workspaces`)
 
@@ -196,7 +239,12 @@ The API will be available at:
 | POST | `/workspaces/{id}/members` | Add member to workspace | Yes (OWNER/ADMIN) |
 | PATCH | `/workspaces/{id}/members/{user_id}` | Update member role | Yes (OWNER only) |
 | DELETE | `/workspaces/{id}/members/{user_id}` | Remove member | Yes |
+| GET | `/workspaces/{id}/invitations` | List pending invitations | Yes |
+| POST | `/workspaces/{id}/invitations` | Send an invitation | Yes (OWNER/ADMIN) |
+| DELETE | `/workspaces/{id}/invitations/{id}` | Revoke invitation | Yes (OWNER/ADMIN) |
 | GET | `/workspaces/{id}/stats` | Get workspace statistics | Yes |
+
+---
 
 ### Task Endpoints (`/api/v1/tasks`)
 
@@ -212,17 +260,87 @@ The API will be available at:
 | POST | `/tasks/{task_id}/unarchive` | Unarchive task | Yes |
 | POST | `/tasks/bulk/status` | Bulk update task statuses | Yes |
 
-### Query Parameters for Task Listing
+#### Query Parameters for Task Listing
 
-- `skip` (int, default: 0) — Offset for pagination
-- `limit` (int, default: 100, max: 500) — Number of results
-- `workspace_id` (int, optional) — Filter by workspace
-- `project_id` (int, optional) — Filter by project
-- `cycle_id` (int, optional) — Filter by cycle
-- `status` (enum, optional) — Filter by task status
-- `assignee_id` (int, optional) — Filter by assignee
-- `priority` (enum, optional) — Filter by priority
-- `search` (string, optional) — Search in title, identifier, description
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `skip` | int | `0` | Offset for pagination |
+| `limit` | int | `100` | Results per page (max 500) |
+| `workspace_id` | int | — | Filter by workspace |
+| `project_id` | int | — | Filter by project |
+| `cycle_id` | int | — | Filter by cycle |
+| `status` | enum | — | `BACKLOG` · `TODO` · `IN_PROGRESS` · `IN_REVIEW` · `DONE` · `CANCELED` |
+| `assignee_id` | int | — | Filter by assignee |
+| `priority` | enum | — | `URGENT` · `HIGH` · `MEDIUM` · `LOW` · `NONE` |
+| `search` | string | — | Full-text search across title, identifier, description |
+
+---
+
+### Team Endpoints (`/api/v1/teams`) 🆕
+
+> Teams are functional units (e.g., Engineering, Design) within a workspace.  
+> All mutating operations require the caller to be a workspace **OWNER** or **ADMIN**.
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/teams?workspace_id={id}` | List teams in a workspace (paginated) | Yes |
+| GET | `/teams/{team_id}` | Get team by ID | Yes |
+| POST | `/teams` | Create a new team | Yes (OWNER/ADMIN) |
+| PATCH | `/teams/{team_id}` | Update team name or lead | Yes (OWNER/ADMIN) |
+| DELETE | `/teams/{team_id}` | Soft-delete a team | Yes (OWNER/ADMIN) |
+| GET | `/teams/{team_id}/members` | List team members (paginated) | Yes |
+| POST | `/teams/{team_id}/members` | Add a user to a team | Yes (OWNER/ADMIN) |
+| PATCH | `/teams/{team_id}/members/{user_id}` | Update a member's role | Yes (OWNER/ADMIN) |
+| DELETE | `/teams/{team_id}/members/{user_id}` | Remove a member from a team | Yes (OWNER/ADMIN) |
+
+#### Team Create / Update Payload
+
+```json
+// POST /api/v1/teams
+{
+  "name": "Engineering",
+  "workspace_id": 1,
+  "lead_id": 3
+}
+
+// PATCH /api/v1/teams/{team_id}
+{
+  "name": "Platform Engineering",
+  "lead_id": 5
+}
+```
+
+#### Team Member Roles
+
+| Role | Description |
+|------|-------------|
+| `LEAD` | Team lead — typically the person who manages the team |
+| `MEMBER` | Standard team member (default) |
+| `VIEWER` | Read-only participant |
+
+#### Add / Update Member Payload
+
+```json
+// POST /api/v1/teams/{team_id}/members
+{
+  "user_id": 4,
+  "role": "MEMBER"
+}
+
+// PATCH /api/v1/teams/{team_id}/members/{user_id}
+{
+  "role": "LEAD"
+}
+```
+
+#### Query Parameters for Team Listing
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `workspace_id` | int | **required** | Filter by workspace |
+| `skip` | int | `0` | Offset for pagination |
+| `limit` | int | `100` | Results per page (max 500) |
+| `search` | string | — | Search by team name |
 
 ---
 
@@ -232,19 +350,24 @@ The data model is designed for **multi-tenant SaaS** with strict tenant isolatio
 
 ### Phase 1: Core MVP (Implemented)
 
-- **User** — Global identity with email, password, and activity tracking
-- **Workspace** — Root container for all projects and users
-- **WorkspaceMember** — RBAC mapping with roles (OWNER, ADMIN, MEMBER, VIEWER, GUEST)
-- **Task** — Central work item with status, priority, assignments, and AI summaries
-- **Project** — Task collections with identifiers (e.g., GAZ-123)
-- **Cycle** — Time-boxed agile iterations
-- **Team** — Department/functional unit grouping
-- **Comment** — Task discussions and system events
-- **Label** — Task categorization tags
-- **Attachment** — File uploads linked to tasks
-- **Initiative** — Strategic objectives and roadmaps
-- **Invitation** — User onboarding workflow
-- **TaskHistory** — Field-level audit trail for tasks
+| Model | Description |
+|-------|-------------|
+| **User** | Global identity with email, password, and activity tracking |
+| **Workspace** | Root container for all projects and users |
+| **WorkspaceMember** | RBAC mapping with roles (OWNER, ADMIN, MEMBER, VIEWER, GUEST) |
+| **Team** | Department/functional unit grouping within a workspace |
+| **TeamMember** | Pivot table mapping users to teams with roles (LEAD, MEMBER, VIEWER) |
+| **Invitation** | User onboarding workflow into workspaces |
+| **Project** | Task collections with unique identifiers (e.g., GAZ) |
+| **Cycle** | Time-boxed agile iterations within a project |
+| **Initiative** | Strategic objectives and roadmaps |
+| **Task** | Central work item with status, priority, assignments, and AI summaries |
+| **TaskHistory** | Field-level audit trail for tasks |
+| **Label** | Task categorization tags |
+| **TaskLabel** | Pivot table linking tasks to labels |
+| **Comment** | Task discussions and system events |
+| **Attachment** | File uploads linked to tasks |
+| **Update** | Team announcements / megaphone feed |
 
 ### Phase 2: Future SaaS & Enterprise (Planned)
 
@@ -266,8 +389,8 @@ The data model is designed for **multi-tenant SaaS** with strict tenant isolatio
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `DATABASE_URL` | ✅ | - | PostgreSQL connection string (asyncpg) |
-| `SECRET_KEY` | ✅ | - | JWT signing secret (use strong random value) |
+| `DATABASE_URL` | ✅ | — | PostgreSQL connection string (asyncpg) |
+| `SECRET_KEY` | ✅ | — | JWT signing secret (use strong random value) |
 | `APP_ENV` | ❌ | `production` | Application environment (`development`, `production`) |
 | `DEBUG` | ❌ | `False` | Enable debug mode |
 | `DB_POOL_SIZE` | ❌ | `10` | Database connection pool size |
@@ -342,14 +465,25 @@ async def create_resource(
 
 ```bash
 # Run all tests
-pytest
+.venv/bin/pytest
 
-# Run with coverage
-pytest --cov=app --cov-report=html
+# Run with verbose output
+.venv/bin/pytest -v
 
 # Run specific test file
-pytest tests/test_auth.py
+.venv/bin/pytest tests/test_app_surface.py
+
+# Run with coverage
+.venv/bin/pytest --cov=app --cov-report=html
 ```
+
+### Smoke Tests (`tests/test_app_surface.py`)
+
+A no-database smoke test suite validates the full OpenAPI surface on every run:
+
+- ✅ Root endpoint returns expected message
+- ✅ `/docs`, `/redoc`, and `/openapi.json` are accessible
+- ✅ All registered routes appear in the OpenAPI spec (auth + workspaces + tasks + **teams**)
 
 ---
 
@@ -358,56 +492,73 @@ pytest tests/test_auth.py
 ```
 gazior-ops-backend/
 ├── app/
-│   ├── api/                    # Controller Layer
-│   │   ├── dependencies.py     # FastAPI dependencies (get_db, get_current_user)
+│   ├── api/                        # Controller Layer
+│   │   ├── dependencies.py         # FastAPI deps (get_db, get_current_user, check_workspace_membership)
 │   │   └── endpoints/
-│   │       ├── v1/             # API v1 routes
-│   │       │   ├── auth.py     # Authentication endpoints
-│   │       │   ├── task.py     # Task endpoints
-│   │       │   └── workspace.py # Workspace endpoints
-│   │       └── v2/             # API v2 (future)
-│   ├── core/                   # Cross-cutting concerns
-│   │   ├── config.py           # Pydantic settings
-│   │   ├── exceptions.py       # Custom exception classes
-│   │   ├── security.py         # JWT create/decode helpers
+│   │       ├── v1/                 # API v1 routes
+│   │       │   ├── auth.py         # Authentication endpoints
+│   │       │   ├── task.py         # Task endpoints
+│   │       │   ├── team.py         # Team & TeamMember endpoints ✨
+│   │       │   └── workspace.py    # Workspace & member endpoints
+│   │       └── v2/                 # API v2 (future)
+│   ├── core/                       # Cross-cutting concerns
+│   │   ├── config.py               # Pydantic settings
+│   │   ├── exceptions.py           # Custom exception classes
+│   │   ├── security.py             # JWT create/decode helpers
 │   │   └── enums/
-│   │       └── common.py       # All domain enums
-│   ├── db/                     # Database infrastructure
-│   │   ├── database.py         # Async engine & session management
-│   │   └── init_db.py          # Dev-only table auto-creation
-│   ├── models/                 # SQLAlchemy ORM models
+│   │       └── common.py           # All domain enums (incl. TeamMemberRole ✨)
+│   ├── db/                         # Database infrastructure
+│   │   ├── database.py             # Async engine & session management
+│   │   └── init_db.py              # Dev-only table auto-creation
+│   ├── models/                     # SQLAlchemy ORM models (16 total)
 │   │   ├── user.py
 │   │   ├── workspace.py
 │   │   ├── workspace_member.py
+│   │   ├── team.py                 # Team model ✨
+│   │   ├── team_member.py          # TeamMember pivot model ✨
 │   │   ├── task.py
-│   │   └── ... (16 total models)
-│   ├── repositories/           # Data Access Layer
+│   │   └── ...
+│   ├── repositories/               # Data Access Layer
 │   │   ├── user.py
 │   │   ├── task.py
-│   │   └── workspace.py
-│   ├── schemas/                # Pydantic DTOs
+│   │   ├── team.py                 # TeamRepository ✨
+│   │   ├── team_member.py          # TeamMemberRepository ✨
+│   │   ├── workspace.py
+│   │   └── workspace_member.py
+│   ├── schemas/                    # Pydantic DTOs
 │   │   ├── auth.py
 │   │   ├── task.py
+│   │   ├── team.py                 # Team & TeamMember schemas ✨
 │   │   └── workspace.py
-│   ├── services/               # Business Logic Layer
+│   ├── services/                   # Business Logic Layer
 │   │   ├── auth_service.py
 │   │   ├── task_service.py
+│   │   ├── team_service.py         # TeamService ✨
 │   │   └── workspace_service.py
 │   ├── utils/
-│   │   └── password.py         # Password hashing (Argon2)
-│   ├── main.py                 # FastAPI app entry point
+│   │   └── password.py             # Password hashing (Argon2)
+│   ├── main.py                     # FastAPI app entry point
 │   └── __init__.py
-├── alembic/                    # Database migrations
+├── alembic/                        # Database migrations
 │   ├── versions/
 │   └── env.py
-├── tests/                      # Test suite
-├── .env                        # Environment variables (gitignored)
-├── alembic.ini                 # Alembic configuration
-├── pyproject.toml              # Project metadata & tool config
-├── requirements.txt            # Python dependencies
-├── run.py                      # Development server runner
-├── README.md                   # This file
-└── DATA_MODEL.md               # Complete schema documentation
+├── demo_data/                      # Ready-to-use API demo payloads
+│   ├── auth.json
+│   ├── invitation.json
+│   ├── placeholders.json
+│   ├── task.json
+│   ├── team.json                   # Team & TeamMember demo data ✨
+│   └── workspace.json
+├── tests/                          # Test suite
+│   ├── conftest.py                 # Pytest configuration & env defaults
+│   └── test_app_surface.py         # OpenAPI surface smoke tests
+├── .env                            # Environment variables (gitignored)
+├── alembic.ini                     # Alembic configuration
+├── DATA_MODEL.md                   # Complete schema documentation
+├── pyproject.toml                  # Project metadata & tool config
+├── requirements.txt                # Python dependencies
+├── run.py                          # Development server runner
+└── README.md                       # This file
 ```
 
 ---
@@ -420,6 +571,16 @@ gazior-ops-backend/
 - **OAuth2 Password Flow** — Standard OAuth2 compatible login
 - **Workspace Membership** — Every workspace/task endpoint verifies user membership
 - **Role-Based Access Control** — Granular permissions based on user roles
+
+### Permission Matrix
+
+| Resource | Read | Create | Update | Delete |
+|----------|------|--------|--------|--------|
+| Workspace | Any member | Authenticated | OWNER / ADMIN | OWNER |
+| Workspace Member | Any member | OWNER / ADMIN | OWNER | OWNER / ADMIN / Self |
+| Team | Any member | OWNER / ADMIN | OWNER / ADMIN | OWNER / ADMIN |
+| Team Member | Any member | OWNER / ADMIN | OWNER / ADMIN | OWNER / ADMIN |
+| Task | Any member | Any member | Any member | Any member |
 
 ### Password Requirements
 
