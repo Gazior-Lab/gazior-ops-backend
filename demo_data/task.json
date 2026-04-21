@@ -1,0 +1,54 @@
+{
+  "_notes": {
+    "list": "GET /api/v1/tasks?skip=0&limit=100&workspace_id=&project_id=&cycle_id=&status=&assignee_id=&priority=&search=",
+    "bulk_status": "POST /api/v1/tasks/bulk/status?task_ids=1&task_ids=2&new_status=IN_PROGRESS (repeat task_ids for each id)"
+  },
+  "task_create": {
+    "title": "Set up CI pipeline",
+    "description": "Configure GitHub Actions for test and lint on every PR.",
+    "status": "BACKLOG",
+    "priority": "HIGH",
+    "position": 0,
+    "assignee_id": null,
+    "story_points": 3,
+    "due_date": "2026-05-01",
+    "workspace_id": 1,
+    "project_id": 1,
+    "cycle_id": null,
+    "parent_task_id": null,
+    "reporter_id": 1
+  },
+  "task_create_minimal": {
+    "title": "Quick follow-up task",
+    "workspace_id": 1,
+    "project_id": 1,
+    "reporter_id": 1
+  },
+  "task_create_in_progress": {
+    "title": "Implement invitation accept flow",
+    "description": "Public endpoint to accept invite by token.",
+    "status": "IN_PROGRESS",
+    "priority": "MEDIUM",
+    "workspace_id": 1,
+    "project_id": 1,
+    "reporter_id": 1
+  },
+  "task_update": {
+    "title": "Set up CI pipeline (updated)",
+    "description": "Include coverage report upload.",
+    "status": "IN_REVIEW",
+    "priority": "URGENT",
+    "position": 10,
+    "assignee_id": 1,
+    "story_points": 5,
+    "due_date": "2026-05-15",
+    "is_archived": false
+  },
+  "task_update_status_only": {
+    "status": "DONE"
+  },
+  "bulk_status_query": {
+    "task_ids": [1, 2, 3],
+    "new_status": "TODO"
+  }
+}

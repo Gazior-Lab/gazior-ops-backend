@@ -1,0 +1,50 @@
+{
+  "_notes": {
+    "list": "GET /api/v1/workspaces?skip=0&limit=100&search=optional",
+    "my_workspaces": "GET /api/v1/workspaces/my?skip=0&limit=100",
+    "slug": "GET /api/v1/workspaces/slug/{slug}",
+    "get": "GET /api/v1/workspaces/{workspace_id}",
+    "members_list": "GET /api/v1/workspaces/{workspace_id}/members?skip=0&limit=100",
+    "add_member": "POST /api/v1/workspaces/{workspace_id}/members?user_id=...&role=MEMBER",
+    "update_member_role": "PATCH /api/v1/workspaces/{workspace_id}/members/{user_id}?new_role=ADMIN",
+    "stats": "GET /api/v1/workspaces/{workspace_id}/stats"
+  },
+  "workspace_create": {
+    "name": "Gazior Demo Workspace",
+    "slug": "gazior-demo",
+    "logo_url": "https://example.com/logo.png",
+    "timezone": "America/New_York",
+    "description": "Sample workspace for API demos and integration tests."
+  },
+  "workspace_create_minimal": {
+    "name": "Minimal Demo",
+    "slug": "gazior-demo-minimal",
+    "timezone": "UTC"
+  },
+  "workspace_update": {
+    "name": "Gazior Demo Workspace (renamed)",
+    "slug": "gazior-demo-v2",
+    "logo_url": null,
+    "timezone": "UTC",
+    "description": "Updated description for PATCH demo."
+  },
+  "workspace_update_partial": {
+    "description": "Only patching description."
+  },
+  "add_member_query": {
+    "user_id": 2,
+    "role": "MEMBER"
+  },
+  "add_member_admin_query": {
+    "user_id": 2,
+    "role": "ADMIN"
+  },
+  "update_member_role_query": {
+    "new_role": "ADMIN"
+  },
+  "list_query": {
+    "skip": 0,
+    "limit": 50,
+    "search": "gazior"
+  }
+}

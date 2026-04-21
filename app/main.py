@@ -7,6 +7,7 @@ from app.core.config import settings
 from app.db.database import engine
 from app.api.endpoints.v1 import auth
 from app.api.endpoints.v1 import task
+from app.api.endpoints.v1 import team
 from app.api.endpoints.v1 import workspace
 from app.core.exceptions import AppException
 
@@ -73,6 +74,11 @@ app.include_router(
 
 app.include_router(
     task.router,
+    prefix="/api/v1",
+)
+
+app.include_router(
+    team.router,
     prefix="/api/v1",
 )
 

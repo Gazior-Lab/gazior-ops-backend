@@ -41,6 +41,16 @@ EXPECTED_ROUTE_METHODS = {
     ("POST", "/api/v1/tasks/{task_id}/archive"),
     ("POST", "/api/v1/tasks/{task_id}/unarchive"),
     ("POST", "/api/v1/tasks/bulk/status"),
+    # teams
+    ("GET", "/api/v1/teams"),
+    ("GET", "/api/v1/teams/{team_id}"),
+    ("POST", "/api/v1/teams"),
+    ("PATCH", "/api/v1/teams/{team_id}"),
+    ("DELETE", "/api/v1/teams/{team_id}"),
+    ("GET", "/api/v1/teams/{team_id}/members"),
+    ("POST", "/api/v1/teams/{team_id}/members"),
+    ("PATCH", "/api/v1/teams/{team_id}/members/{user_id}"),
+    ("DELETE", "/api/v1/teams/{team_id}/members/{user_id}"),
 }
 
 
