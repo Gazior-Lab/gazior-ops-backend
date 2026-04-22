@@ -1,0 +1,66 @@
+{
+  "_notes": {
+    "list":   "GET    /api/v1/initiatives?workspace_id=1&skip=0&limit=100&search=optional&health_status=ON_TRACK",
+    "get":    "GET    /api/v1/initiatives/{initiative_id}",
+    "create": "POST   /api/v1/initiatives",
+    "update": "PATCH  /api/v1/initiatives/{initiative_id}",
+    "delete": "DELETE /api/v1/initiatives/{initiative_id}"
+  },
+
+  "initiative_create_full": {
+    "workspace_id": 1,
+    "name": "Platform Foundation",
+    "summary": "Core platform development tracking all infrastructure and backend work.",
+    "owner_id": 1,
+    "health_status": "ON_TRACK",
+    "progress_percentage": 25
+  },
+
+  "initiative_create_minimal": {
+    "workspace_id": 1,
+    "name": "Mobile App Launch"
+  },
+
+  "initiative_create_needs_focus": {
+    "workspace_id": 1,
+    "name": "Design System Implementation",
+    "summary": "Implement the shared UI component library.",
+    "owner_id": 2,
+    "health_status": "NEEDS_FOCUS",
+    "progress_percentage": 10
+  },
+
+  "initiative_update_name_and_summary": {
+    "name": "Gazior Core Platform Foundation",
+    "summary": "Updated summary — covers platform, infra, and DevOps."
+  },
+
+  "initiative_update_status_to_completed": {
+    "health_status": "COMPLETED",
+    "progress_percentage": 100
+  },
+
+  "initiative_update_owner": {
+    "owner_id": 2
+  },
+
+  "list_query_paginated": {
+    "workspace_id": 1,
+    "skip": 0,
+    "limit": 20
+  },
+
+  "list_query_search": {
+    "workspace_id": 1,
+    "skip": 0,
+    "limit": 50,
+    "search": "platform"
+  },
+
+  "list_query_filter_by_status": {
+    "workspace_id": 1,
+    "skip": 0,
+    "limit": 50,
+    "health_status": "ON_TRACK"
+  }
+}

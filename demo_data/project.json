@@ -1,0 +1,90 @@
+{
+  "_notes": {
+    "list":   "GET    /api/v1/projects?workspace_id=1&skip=0&limit=100&search=optional&status=ACTIVE",
+    "get":    "GET    /api/v1/projects/{project_id}",
+    "create": "POST   /api/v1/projects",
+    "update": "PATCH  /api/v1/projects/{project_id}",
+    "delete": "DELETE /api/v1/projects/{project_id}"
+  },
+
+  "project_create_full": {
+    "workspace_id": 1,
+    "name": "Gazior Platform",
+    "identifier": "GAZ",
+    "description": "Core platform development tracking all infrastructure and backend work.",
+    "owner_id": 1,
+    "status": "ACTIVE",
+    "visibility": "PRIVATE"
+  },
+
+  "project_create_minimal": {
+    "workspace_id": 1,
+    "name": "Mobile App",
+    "identifier": "MOB"
+  },
+
+  "project_create_public": {
+    "workspace_id": 1,
+    "name": "Design System",
+    "identifier": "DS",
+    "description": "Shared UI component library and design tokens.",
+    "owner_id": 2,
+    "status": "PLANNED",
+    "visibility": "PUBLIC"
+  },
+
+  "project_create_on_hold": {
+    "workspace_id": 1,
+    "name": "Legacy Migration",
+    "identifier": "LEGM",
+    "description": "Migrating services from the legacy monolith.",
+    "owner_id": 3,
+    "status": "ON_HOLD",
+    "visibility": "PRIVATE"
+  },
+
+  "project_update_name_and_description": {
+    "name": "Gazior Core Platform",
+    "description": "Updated description — covers platform, infra, and DevOps."
+  },
+
+  "project_update_status_to_completed": {
+    "status": "COMPLETED"
+  },
+
+  "project_update_visibility_to_public": {
+    "visibility": "PUBLIC"
+  },
+
+  "project_update_owner": {
+    "owner_id": 2
+  },
+
+  "project_update_full": {
+    "name": "Gazior Core Platform",
+    "description": "Covers platform, infra, DevOps, and observability.",
+    "owner_id": 2,
+    "status": "ACTIVE",
+    "visibility": "PRIVATE"
+  },
+
+  "list_query_paginated": {
+    "workspace_id": 1,
+    "skip": 0,
+    "limit": 20
+  },
+
+  "list_query_search": {
+    "workspace_id": 1,
+    "skip": 0,
+    "limit": 50,
+    "search": "gaz"
+  },
+
+  "list_query_filter_by_status": {
+    "workspace_id": 1,
+    "skip": 0,
+    "limit": 50,
+    "status": "ACTIVE"
+  }
+}
