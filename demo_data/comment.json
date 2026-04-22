@@ -1,0 +1,30 @@
+{
+  "_notes": {
+    "list":   "GET    /api/v1/comments?task_id=1&skip=0&limit=100",
+    "get":    "GET    /api/v1/comments/{comment_id}",
+    "create": "POST   /api/v1/comments",
+    "update": "PATCH  /api/v1/comments/{comment_id}",
+    "delete": "DELETE /api/v1/comments/{comment_id}"
+  },
+
+  "comment_create_user": {
+    "task_id": 1,
+    "content": "I've started working on this task. Will update the PR shortly."
+  },
+
+  "comment_create_system": {
+    "task_id": 1,
+    "content": "**Status changed** from `BACKLOG` to `IN_PROGRESS`",
+    "is_system_event": true
+  },
+
+  "comment_update": {
+    "content": "I've started working on this task. The PR is now up for review."
+  },
+
+  "list_query": {
+    "task_id": 1,
+    "skip": 0,
+    "limit": 50
+  }
+}

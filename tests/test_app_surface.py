@@ -63,6 +63,24 @@ EXPECTED_ROUTE_METHODS = {
     ("POST", "/api/v1/teams/{team_id}/members"),
     ("PATCH", "/api/v1/teams/{team_id}/members/{user_id}"),
     ("DELETE", "/api/v1/teams/{team_id}/members/{user_id}"),
+    # comments
+    ("GET", "/api/v1/comments"),
+    ("GET", "/api/v1/comments/{comment_id}"),
+    ("POST", "/api/v1/comments"),
+    ("PATCH", "/api/v1/comments/{comment_id}"),
+    ("DELETE", "/api/v1/comments/{comment_id}"),
+    # attachments
+    ("GET", "/api/v1/attachments"),
+    ("GET", "/api/v1/attachments/{attachment_id}"),
+    ("POST", "/api/v1/attachments"),
+    ("PATCH", "/api/v1/attachments/{attachment_id}"),
+    ("DELETE", "/api/v1/attachments/{attachment_id}"),
+    # updates
+    ("GET", "/api/v1/updates"),
+    ("GET", "/api/v1/updates/{update_id}"),
+    ("POST", "/api/v1/updates"),
+    ("PATCH", "/api/v1/updates/{update_id}"),
+    ("DELETE", "/api/v1/updates/{update_id}"),
 }
 
 
