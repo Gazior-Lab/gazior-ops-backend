@@ -1,4 +1,3 @@
-# app/api/endpoints/v1/team.py
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -22,9 +21,6 @@ from app.core.enums.common import TeamMemberRole
 router = APIRouter(prefix="/teams", tags=["teams"])
 
 
-# ---------------------------------------------------------------------------
-# Team endpoints
-# ---------------------------------------------------------------------------
 
 @router.get("", response_model=TeamListResponse)
 async def list_teams(
@@ -111,9 +107,7 @@ async def delete_team(
         )
 
 
-# ---------------------------------------------------------------------------
 # Team member sub-resource endpoints
-# ---------------------------------------------------------------------------
 
 @router.get("/{team_id}/members", response_model=TeamMemberListResponse)
 async def list_team_members(

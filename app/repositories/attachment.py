@@ -1,4 +1,3 @@
-# app/repositories/attachment.py
 from datetime import datetime, timezone
 from typing import Optional, List, Tuple
 
@@ -47,7 +46,7 @@ class AttachmentRepository:
     async def create(self, attachment: Attachment) -> Attachment:
         """Persist a new Attachment instance."""
         self.db.add(attachment)
-        await self.db.commit()
+        await self.db.flush()
         await self.db.refresh(attachment)
         return attachment
 
@@ -61,7 +60,7 @@ class AttachmentRepository:
             if hasattr(attachment, key):
                 setattr(attachment, key, value)
 
-        await self.db.commit()
+        await self.db.flush()
         await self.db.refresh(attachment)
         return attachment
 
@@ -73,5 +72,5 @@ class AttachmentRepository:
 
         attachment.deleted_at = datetime.now(timezone.utc)
         attachment.updated_by_id = deleted_by_id
-        await self.db.commit()
+        await self.db.flush()
         return True

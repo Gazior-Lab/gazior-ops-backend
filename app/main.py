@@ -8,9 +8,13 @@ from app.db.database import engine
 from app.api.endpoints.v1 import attachment
 from app.api.endpoints.v1 import auth
 from app.api.endpoints.v1 import comment
+from app.api.endpoints.v1 import cycle
 from app.api.endpoints.v1 import initiative
+from app.api.endpoints.v1 import label
 from app.api.endpoints.v1 import project
 from app.api.endpoints.v1 import task
+from app.api.endpoints.v1 import task_history
+from app.api.endpoints.v1 import task_label
 from app.api.endpoints.v1 import team
 from app.api.endpoints.v1 import update
 from app.api.endpoints.v1 import workspace
@@ -93,12 +97,32 @@ app.include_router(
 )
 
 app.include_router(
+    cycle.router,
+    prefix="/api/v1",
+)
+
+app.include_router(
     initiative.router,
     prefix="/api/v1",
 )
 
 app.include_router(
+    label.router,
+    prefix="/api/v1",
+)
+
+app.include_router(
     project.router,
+    prefix="/api/v1",
+)
+
+app.include_router(
+    task_history.router,
+    prefix="/api/v1",
+)
+
+app.include_router(
+    task_label.router,
     prefix="/api/v1",
 )
 
@@ -115,3 +139,4 @@ app.include_router(
 @app.get('/')
 def root():
     return {'message': 'Gazior Ops server is running'}
+

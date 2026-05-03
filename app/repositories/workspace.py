@@ -118,7 +118,7 @@ class WorkspaceRepository:
     async def create(self, workspace: Workspace) -> Workspace:
         """Create a new workspace"""
         self.db.add(workspace)
-        await self.db.commit()
+        await self.db.flush()
         await self.db.refresh(workspace)
         return workspace
 
@@ -132,7 +132,7 @@ class WorkspaceRepository:
             if hasattr(workspace, key):
                 setattr(workspace, key, value)
 
-        await self.db.commit()
+        await self.db.flush()
         await self.db.refresh(workspace)
         return workspace
 
@@ -145,7 +145,7 @@ class WorkspaceRepository:
         workspace.deleted_at = datetime.now(timezone.utc)
         workspace.updated_by_id = deleted_by_id
 
-        await self.db.commit()
+        await self.db.flush()
         return True
 
     async def slug_exists(self, slug: str, exclude_id: Optional[int] = None) -> bool:

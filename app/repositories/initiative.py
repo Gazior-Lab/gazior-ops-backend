@@ -1,4 +1,3 @@
-# app/repositories/initiative.py
 from datetime import datetime, timezone
 from typing import Optional, List, Tuple
 
@@ -50,7 +49,8 @@ class InitiativeRepository:
         total_result = await self.db.execute(count_query)
         total = total_result.scalar()
 
-        query = query.order_by(Initiative.created_at.desc()).offset(skip).limit(limit)
+        query = query.order_by(Initiative.created_at.desc()
+                               ).offset(skip).limit(limit)
         result = await self.db.execute(query)
         initiatives = result.scalars().all()
 
@@ -59,7 +59,7 @@ class InitiativeRepository:
     async def create(self, initiative: Initiative) -> Initiative:
         """Persist a new Initiative instance."""
         self.db.add(initiative)
-        await self.db.commit()
+        await self.db.flush()
         await self.db.refresh(initiative)
         return initiative
 
@@ -73,7 +73,7 @@ class InitiativeRepository:
             if hasattr(initiative, key):
                 setattr(initiative, key, value)
 
-        await self.db.commit()
+        await self.db.flush()
         await self.db.refresh(initiative)
         return initiative
 
@@ -85,7 +85,7 @@ class InitiativeRepository:
 
         initiative.deleted_at = datetime.now(timezone.utc)
         initiative.updated_by_id = deleted_by_id
-        await self.db.commit()
+        await self.db.flush()
         return True
 
     async def name_exists_in_workspace(

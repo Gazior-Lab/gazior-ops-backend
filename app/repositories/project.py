@@ -1,4 +1,3 @@
-# app/repositories/project.py
 from datetime import datetime, timezone
 from typing import Optional, List, Tuple
 
@@ -50,16 +49,27 @@ class ProjectRepository:
         total_result = await self.db.execute(count_query)
         total = total_result.scalar()
 
-        query = query.order_by(Project.created_at.desc()).offset(skip).limit(limit)
+        query = query.order_by(Project.created_at.desc()
+                               ).offset(skip).limit(limit)
         result = await self.db.execute(query)
         projects = result.scalars().all()
 
         return projects, total
 
+    async def get_count_by_workspace(self, workspace_id: int) -> int:
+        """Get total count of projects in a workspace"""
+        result = await self.db.execute(
+            select(func.count(Project.id)).where(
+                Project.workspace_id == workspace_id,
+                Project.deleted_at.is_(None)
+            )
+        )
+        return result.scalar() or 0
+
     async def create(self, project: Project) -> Project:
         """Persist a new Project instance."""
         self.db.add(project)
-        await self.db.commit()
+        await self.db.flush()
         await self.db.refresh(project)
         return project
 
@@ -73,7 +83,7 @@ class ProjectRepository:
             if hasattr(project, key):
                 setattr(project, key, value)
 
-        await self.db.commit()
+        await self.db.flush()
         await self.db.refresh(project)
         return project
 
@@ -85,7 +95,7 @@ class ProjectRepository:
 
         project.deleted_at = datetime.now(timezone.utc)
         project.updated_by_id = deleted_by_id
-        await self.db.commit()
+        await self.db.flush()
         return True
 
     async def identifier_exists_in_workspace(

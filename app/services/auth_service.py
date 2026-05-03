@@ -24,6 +24,9 @@ class AuthService:
         if not user.is_active:
             raise CredentialsError("User account is disabled")
 
+        # Update last login timestamp
+        await self.user_repo.update_last_login(user)
+
         return user
 
     async def get_user_by_email(self, email: str) -> User | None:

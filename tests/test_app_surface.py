@@ -81,6 +81,24 @@ EXPECTED_ROUTE_METHODS = {
     ("POST", "/api/v1/updates"),
     ("PATCH", "/api/v1/updates/{update_id}"),
     ("DELETE", "/api/v1/updates/{update_id}"),
+    # cycles
+    ("GET", "/api/v1/cycles"),
+    ("GET", "/api/v1/cycles/{cycle_id}"),
+    ("POST", "/api/v1/cycles"),
+    ("PATCH", "/api/v1/cycles/{cycle_id}"),
+    ("DELETE", "/api/v1/cycles/{cycle_id}"),
+    # labels
+    ("GET", "/api/v1/labels"),
+    ("GET", "/api/v1/labels/{label_id}"),
+    ("POST", "/api/v1/labels"),
+    ("PATCH", "/api/v1/labels/{label_id}"),
+    ("DELETE", "/api/v1/labels/{label_id}"),
+    # task histories
+    ("GET", "/api/v1/task-histories"),
+    # task labels
+    ("GET", "/api/v1/task-labels"),
+    ("POST", "/api/v1/task-labels"),
+    ("DELETE", "/api/v1/task-labels"),
 }
 
 

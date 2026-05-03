@@ -1,4 +1,3 @@
-# app/services/project_service.py
 from datetime import datetime, timezone
 from typing import Optional, Dict, Any
 
@@ -39,6 +38,16 @@ class ProjectService:
                 message="Only workspace owners and admins can manage projects"
             )
 
+    async def _require_workspace_access(self, workspace_id: int, user_id: int) -> None:
+        """Raise ForbiddenError if the user is not a member of the workspace."""
+        ws_member = await self.ws_member_repo.get_by_user_and_workspace(
+            user_id=user_id, workspace_id=workspace_id
+        )
+        if not ws_member:
+            raise ForbiddenError(
+                message="You don't have access to this workspace"
+            )
+
     async def _require_project_exists(self, project_id: int) -> Project:
         """Return project or raise ObjectNotFoundError."""
         project = await self.project_repo.get_by_id(project_id)
@@ -53,17 +62,21 @@ class ProjectService:
     # Project CRUD
     # ------------------------------------------------------------------
 
-    async def get_project(self, project_id: int) -> Optional[Project]:
-        return await self.project_repo.get_by_id(project_id)
+    async def get_project(self, project_id: int, current_user_id: int) -> Optional[Project]:
+        project = await self._require_project_exists(project_id)
+        await self._require_workspace_access(project.workspace_id, current_user_id)
+        return project
 
     async def get_projects(
         self,
         workspace_id: int,
+        current_user_id: int,
         skip: int = 0,
         limit: int = 100,
         search: Optional[str] = None,
         status: Optional[str] = None,
     ) -> Dict[str, Any]:
+        await self._require_workspace_access(workspace_id, current_user_id)
         projects, total = await self.project_repo.get_all_by_workspace(
             workspace_id=workspace_id,
             skip=skip,

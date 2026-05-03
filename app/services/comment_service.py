@@ -1,4 +1,3 @@
-# app/services/comment_service.py
 from datetime import datetime, timezone
 from typing import Optional, Dict, Any
 

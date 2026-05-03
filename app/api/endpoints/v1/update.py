@@ -1,4 +1,3 @@
-# app/api/endpoints/v1/update.py
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -17,9 +16,6 @@ from app.schemas.update import (
 router = APIRouter(prefix="/updates", tags=["updates"])
 
 
-# ---------------------------------------------------------------------------
-# Update endpoints
-# ---------------------------------------------------------------------------
 
 @router.get("", response_model=UpdateListResponse)
 async def list_updates(

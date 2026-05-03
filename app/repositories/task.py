@@ -1,4 +1,3 @@
-# app/repositories/task.py
 from datetime import datetime, timezone
 from typing import Optional, List, Dict, Any
 
@@ -99,10 +98,34 @@ class TaskRepository:
 
         return tasks, total
 
+    async def get_stats_by_workspace(self, workspace_id: int) -> Dict[str, int]:
+        """Get task statistics for a workspace"""
+        # Total tasks
+        total_query = select(func.count(Task.id)).where(
+            Task.workspace_id == workspace_id,
+            Task.deleted_at.is_(None)
+        )
+        total_result = await self.db.execute(total_query)
+        total = total_result.scalar() or 0
+
+        # Active tasks (not CANCELED or DONE)
+        active_query = select(func.count(Task.id)).where(
+            Task.workspace_id == workspace_id,
+            Task.deleted_at.is_(None),
+            Task.status.notin_([TaskStatus.CANCELED, TaskStatus.DONE])
+        )
+        active_result = await self.db.execute(active_query)
+        active = active_result.scalar() or 0
+
+        return {
+            "total_tasks": total,
+            "total_active_tasks": active
+        }
+
     async def create(self, task: Task) -> Task:
         """Create a new task"""
         self.db.add(task)
-        await self.db.commit()
+        await self.db.flush()
         await self.db.refresh(task)
         return task
 
@@ -120,7 +143,7 @@ class TaskRepository:
             if hasattr(task, key):
                 setattr(task, key, value)
 
-        await self.db.commit()
+        await self.db.flush()
         await self.db.refresh(task)
         return task
 
@@ -133,7 +156,7 @@ class TaskRepository:
         task.deleted_at = datetime.now(timezone.utc)
         task.updated_by_id = deleted_by_id
 
-        await self.db.commit()
+        await self.db.flush()
         return True
 
     async def hard_delete(self, task_id: int) -> bool:
@@ -143,7 +166,7 @@ class TaskRepository:
             return False
 
         await self.db.delete(task)
-        await self.db.commit()
+        await self.db.flush()
         return True
 
     async def archive(self, task_id: int, archived_by_id: int) -> Optional[Task]:
@@ -157,7 +180,7 @@ class TaskRepository:
         task.archived_by_id = archived_by_id
         task.updated_by_id = archived_by_id
 
-        await self.db.commit()
+        await self.db.flush()
         await self.db.refresh(task)
         return task
 
@@ -172,7 +195,7 @@ class TaskRepository:
         task.archived_by_id = None
         task.updated_by_id = updated_by_id
 
-        await self.db.commit()
+        await self.db.flush()
         await self.db.refresh(task)
         return task
 
@@ -184,7 +207,7 @@ class TaskRepository:
     ) -> int:
         """Bulk update status for multiple tasks"""
         now = datetime.now(timezone.utc)
-        
+
         result = await self.db.execute(
             select(Task).where(
                 Task.id.in_(task_ids),
@@ -198,5 +221,5 @@ class TaskRepository:
             task.status_changed_at = now
             task.updated_by_id = updated_by_id
 
-        await self.db.commit()
+        await self.db.flush()
         return len(tasks)

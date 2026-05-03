@@ -1,4 +1,3 @@
-# app/api/endpoints/v1/project.py
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -18,9 +17,6 @@ from app.core.enums.common import ProjectStatus
 router = APIRouter(prefix="/projects", tags=["projects"])
 
 
-# ---------------------------------------------------------------------------
-# Project endpoints
-# ---------------------------------------------------------------------------
 
 @router.get("", response_model=ProjectListResponse)
 async def list_projects(
@@ -36,6 +32,7 @@ async def list_projects(
     project_service = ProjectService(db)
     return await project_service.get_projects(
         workspace_id=workspace_id,
+        current_user_id=current_user.id,
         skip=skip,
         limit=limit,
         search=search,
@@ -51,7 +48,10 @@ async def get_project(
 ):
     """Get a specific project by ID."""
     project_service = ProjectService(db)
-    project = await project_service.get_project(project_id)
+    project = await project_service.get_project(
+        project_id=project_id,
+        current_user_id=current_user.id
+    )
     if not project:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

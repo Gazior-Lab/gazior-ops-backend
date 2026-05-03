@@ -1,4 +1,3 @@
-# app/schemas/initiative.py
 from datetime import datetime
 from typing import Optional, List
 from pydantic import BaseModel, Field, ConfigDict
@@ -6,9 +5,6 @@ from pydantic import BaseModel, Field, ConfigDict
 from app.core.enums.common import InitiativeHealthStatus
 
 
-# ---------------------------------------------------------------------------
-# Initiative schemas
-# ---------------------------------------------------------------------------
 
 class InitiativeBase(BaseModel):
     workspace_id: int

@@ -1,4 +1,3 @@
-# app/services/initiative_service.py
 from typing import Optional, Dict, Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -38,6 +37,16 @@ class InitiativeService:
                 message="Only workspace owners and admins can manage initiatives"
             )
 
+    async def _require_workspace_access(self, workspace_id: int, user_id: int) -> None:
+        """Raise ForbiddenError if the user is not a member of the workspace."""
+        ws_member = await self.ws_member_repo.get_by_user_and_workspace(
+            user_id=user_id, workspace_id=workspace_id
+        )
+        if not ws_member:
+            raise ForbiddenError(
+                message="You don't have access to this workspace"
+            )
+
     async def _require_initiative_exists(self, initiative_id: int) -> Initiative:
         """Return initiative or raise ObjectNotFoundError."""
         initiative = await self.initiative_repo.get_by_id(initiative_id)
@@ -52,17 +61,21 @@ class InitiativeService:
     # Initiative CRUD
     # ------------------------------------------------------------------
 
-    async def get_initiative(self, initiative_id: int) -> Optional[Initiative]:
-        return await self.initiative_repo.get_by_id(initiative_id)
+    async def get_initiative(self, initiative_id: int, current_user_id: int) -> Optional[Initiative]:
+        initiative = await self._require_initiative_exists(initiative_id)
+        await self._require_workspace_access(initiative.workspace_id, current_user_id)
+        return initiative
 
     async def get_initiatives(
         self,
         workspace_id: int,
+        current_user_id: int,
         skip: int = 0,
         limit: int = 100,
         search: Optional[str] = None,
         health_status: Optional[str] = None,
     ) -> Dict[str, Any]:
+        await self._require_workspace_access(workspace_id, current_user_id)
         initiatives, total = await self.initiative_repo.get_all_by_workspace(
             workspace_id=workspace_id,
             skip=skip,

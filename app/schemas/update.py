@@ -1,12 +1,8 @@
-# app/schemas/update.py
 from datetime import datetime
 from typing import Optional, List
 from pydantic import BaseModel, Field, ConfigDict
 
 
-# ---------------------------------------------------------------------------
-# Update schemas
-# ---------------------------------------------------------------------------
 
 class UpdateBase(BaseModel):
     workspace_id: int

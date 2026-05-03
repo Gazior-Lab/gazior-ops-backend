@@ -64,7 +64,7 @@ class TeamMemberRepository:
     async def create(self, member: TeamMember) -> TeamMember:
         """Persist a new TeamMember"""
         self.db.add(member)
-        await self.db.commit()
+        await self.db.flush()
         await self.db.refresh(member)
         return member
 
@@ -80,7 +80,7 @@ class TeamMemberRepository:
             return None
 
         member.role = role.value
-        await self.db.commit()
+        await self.db.flush()
         await self.db.refresh(member)
         return member
 
@@ -92,5 +92,5 @@ class TeamMemberRepository:
 
         member.deleted_at = datetime.now(timezone.utc)
         member.updated_by_id = deleted_by_id
-        await self.db.commit()
+        await self.db.flush()
         return True

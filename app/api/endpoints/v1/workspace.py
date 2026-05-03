@@ -135,7 +135,7 @@ async def get_workspace(
         "updated_by_id": workspace.updated_by_id,
         "members": members_result["members"],
     }
-    
+
     return WorkspaceWithMembers(**workspace_dict)
 
 
@@ -151,20 +151,10 @@ async def create_workspace(
     """
     workspace_service = WorkspaceService(db)
 
-    try:
-        workspace = await workspace_service.create_workspace(
-            workspace_data=workspace_data,
-            current_user_id=current_user.id,
-        )
-        return workspace
-    except HTTPException:
-        raise
-    except Exception as e:
-        # Don't expose internal error details to clients
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Failed to create workspace"
-        )
+    return await workspace_service.create_workspace(
+        workspace_data=workspace_data,
+        current_user_id=current_user.id,
+    )
 
 
 @router.patch("/{workspace_id}", response_model=WorkspaceResponse)
@@ -286,22 +276,12 @@ async def add_workspace_member(
 
     workspace_service = WorkspaceService(db)
 
-    try:
-        member = await workspace_service.add_member(
-            workspace_id=workspace_id,
-            user_id=user_id,
-            role=role,
-            current_user_id=current_user.id,
-        )
-        return member
-    except HTTPException:
-        raise
-    except Exception as e:
-        # Don't expose internal error details to clients
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Failed to add member"
-        )
+    return await workspace_service.add_member(
+        workspace_id=workspace_id,
+        user_id=user_id,
+        role=role,
+        current_user_id=current_user.id,
+    )
 
 
 @router.patch(
@@ -311,7 +291,8 @@ async def add_workspace_member(
 async def update_workspace_member(
     workspace_id: int,
     user_id: int,
-    new_role: WorkspaceMemberRole = Query(..., description="New role for the member"),
+    new_role: WorkspaceMemberRole = Query(...,
+                                          description="New role for the member"),
     db: AsyncSession = Depends(get_db),
     current_user=Depends(get_current_user),
 ):

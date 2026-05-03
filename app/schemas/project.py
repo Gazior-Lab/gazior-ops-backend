@@ -1,4 +1,3 @@
-# app/schemas/project.py
 from datetime import datetime
 from typing import Optional, List
 from pydantic import BaseModel, Field, ConfigDict
@@ -6,9 +5,6 @@ from pydantic import BaseModel, Field, ConfigDict
 from app.core.enums.common import ProjectStatus, ProjectVisibility
 
 
-# ---------------------------------------------------------------------------
-# Project schemas
-# ---------------------------------------------------------------------------
 
 class ProjectBase(BaseModel):
     workspace_id: int

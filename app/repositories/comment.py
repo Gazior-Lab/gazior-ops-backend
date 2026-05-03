@@ -1,4 +1,3 @@
-# app/repositories/comment.py
 from datetime import datetime, timezone
 from typing import Optional, List, Tuple
 
@@ -38,7 +37,8 @@ class CommentRepository:
         total_result = await self.db.execute(count_query)
         total = total_result.scalar()
 
-        query = query.order_by(Comment.created_at.asc()).offset(skip).limit(limit)
+        query = query.order_by(Comment.created_at.asc()
+                               ).offset(skip).limit(limit)
         result = await self.db.execute(query)
         comments = result.scalars().all()
 
@@ -47,7 +47,7 @@ class CommentRepository:
     async def create(self, comment: Comment) -> Comment:
         """Persist a new Comment instance."""
         self.db.add(comment)
-        await self.db.commit()
+        await self.db.flush()
         await self.db.refresh(comment)
         return comment
 
@@ -61,7 +61,7 @@ class CommentRepository:
             if hasattr(comment, key):
                 setattr(comment, key, value)
 
-        await self.db.commit()
+        await self.db.flush()
         await self.db.refresh(comment)
         return comment
 
@@ -73,5 +73,5 @@ class CommentRepository:
 
         comment.deleted_at = datetime.now(timezone.utc)
         comment.updated_by_id = deleted_by_id
-        await self.db.commit()
+        await self.db.flush()
         return True

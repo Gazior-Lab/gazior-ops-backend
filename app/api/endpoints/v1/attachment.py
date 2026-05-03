@@ -1,4 +1,3 @@
-# app/api/endpoints/v1/attachment.py
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -17,9 +16,6 @@ from app.schemas.attachment import (
 router = APIRouter(prefix="/attachments", tags=["attachments"])
 
 
-# ---------------------------------------------------------------------------
-# Attachment endpoints
-# ---------------------------------------------------------------------------
 
 @router.get("", response_model=AttachmentListResponse)
 async def list_attachments(

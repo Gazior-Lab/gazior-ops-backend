@@ -1,4 +1,3 @@
-# app/repositories/update.py
 from typing import Optional, List, Tuple
 
 from sqlalchemy import select, func
@@ -51,7 +50,7 @@ class UpdateRepository:
     async def create(self, update: Update) -> Update:
         """Persist a new Update instance."""
         self.db.add(update)
-        await self.db.commit()
+        await self.db.flush()
         await self.db.refresh(update)
         return update
 
@@ -65,7 +64,7 @@ class UpdateRepository:
             if hasattr(update_obj, key):
                 setattr(update_obj, key, value)
 
-        await self.db.commit()
+        await self.db.flush()
         await self.db.refresh(update_obj)
         return update_obj
 
@@ -76,5 +75,5 @@ class UpdateRepository:
             return False
 
         await self.db.delete(update_obj)
-        await self.db.commit()
+        await self.db.flush()
         return True

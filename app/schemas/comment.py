@@ -1,12 +1,8 @@
-# app/schemas/comment.py
 from datetime import datetime
 from typing import Optional, List
 from pydantic import BaseModel, Field, ConfigDict
 
 
-# ---------------------------------------------------------------------------
-# Comment schemas
-# ---------------------------------------------------------------------------
 
 class CommentBase(BaseModel):
     task_id: int

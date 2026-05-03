@@ -1,4 +1,3 @@
-# app/api/endpoints/v1/initiative.py
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -18,9 +17,6 @@ from app.core.enums.common import InitiativeHealthStatus
 router = APIRouter(prefix="/initiatives", tags=["initiatives"])
 
 
-# ---------------------------------------------------------------------------
-# Initiative endpoints
-# ---------------------------------------------------------------------------
 
 @router.get("", response_model=InitiativeListResponse)
 async def list_initiatives(
@@ -36,6 +32,7 @@ async def list_initiatives(
     initiative_service = InitiativeService(db)
     return await initiative_service.get_initiatives(
         workspace_id=workspace_id,
+        current_user_id=current_user.id,
         skip=skip,
         limit=limit,
         search=search,
@@ -51,7 +48,10 @@ async def get_initiative(
 ):
     """Get a specific initiative by ID."""
     initiative_service = InitiativeService(db)
-    initiative = await initiative_service.get_initiative(initiative_id)
+    initiative = await initiative_service.get_initiative(
+        initiative_id=initiative_id,
+        current_user_id=current_user.id
+    )
     if not initiative:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

@@ -1,17 +1,20 @@
-# app/services/task_service.py
 from datetime import datetime, timezone
 from typing import Optional, List, Dict, Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.repositories.task import TaskRepository
+from app.repositories.project import ProjectRepository
 from app.models.task import Task
 from app.schemas.task import TaskCreate, TaskUpdate
 from app.core.enums.common import TaskStatus, TaskPriority
+
+
 class TaskService:
     def __init__(self, db: AsyncSession):
         self.db = db
         self.task_repo = TaskRepository(db)
+        self.project_repo = ProjectRepository(db)
 
     async def get_task(self, task_id: int) -> Optional[Task]:
         """Get a single task by ID"""
@@ -56,10 +59,17 @@ class TaskService:
         """Create a new task with business logic"""
         # Get next task number for the project
         next_number = await self.task_repo.get_next_task_number(task_data.project_id)
-        
-        # TODO: Fetch project identifier from Project repo
-        # For now, using placeholder - you'll need to inject ProjectRepository
-        project_identifier = "GAZ"  # This should come from project
+
+        # Fetch project identifier from Project repo
+        project = await self.project_repo.get_by_id(task_data.project_id)
+        if not project:
+            from app.core.exceptions import ObjectNotFoundError
+            raise ObjectNotFoundError(
+                message=f"Project {task_data.project_id} not found",
+                details={"project_id": task_data.project_id}
+            )
+
+        project_identifier = project.identifier
         identifier = f"{project_identifier}-{next_number}"
 
         # Create task instance
@@ -69,7 +79,7 @@ class TaskService:
             identifier=identifier,
             created_by_id=current_user_id,
             updated_by_id=current_user_id,
-            status_changed_at=datetime.now(timezone.utc) if task_data.status else datetime.now(timezone.utc),
+            status_changed_at=datetime.now(timezone.utc),
         )
 
         return await self.task_repo.create(task)
@@ -82,7 +92,7 @@ class TaskService:
     ) -> Optional[Task]:
         """Update task with business logic"""
         update_data = task_data.model_dump(exclude_unset=True)
-        
+
         if not update_data:
             return await self.task_repo.get_by_id(task_id)
 
@@ -126,4 +136,3 @@ class TaskService:
             "in_progress_tasks": 0,
             "overdue_tasks": 0,
         }
-        

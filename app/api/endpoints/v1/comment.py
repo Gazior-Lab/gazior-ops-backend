@@ -1,4 +1,3 @@
-# app/api/endpoints/v1/comment.py
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -17,9 +16,6 @@ from app.schemas.comment import (
 router = APIRouter(prefix="/comments", tags=["comments"])
 
 
-# ---------------------------------------------------------------------------
-# Comment endpoints
-# ---------------------------------------------------------------------------
 
 @router.get("", response_model=CommentListResponse)
 async def list_comments(

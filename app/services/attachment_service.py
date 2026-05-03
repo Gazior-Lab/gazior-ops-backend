@@ -1,4 +1,3 @@
-# app/services/attachment_service.py
 from typing import Optional, Dict, Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
