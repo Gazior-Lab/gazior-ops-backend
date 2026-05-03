@@ -1,0 +1,28 @@
+{
+  "_notes": {
+    "list":   "GET    /api/v1/cycles?project_id=1&skip=0&limit=100",
+    "get":    "GET    /api/v1/cycles/{cycle_id}",
+    "create": "POST   /api/v1/cycles",
+    "update": "PATCH  /api/v1/cycles/{cycle_id}",
+    "delete": "DELETE /api/v1/cycles/{cycle_id}"
+  },
+
+  "cycle_create": {
+    "project_id": 1,
+    "name": "Cycle 42",
+    "start_date": "2026-04-22T00:00:00Z",
+    "end_date": "2026-05-06T00:00:00Z",
+    "status": "PLANNED"
+  },
+
+  "cycle_update": {
+    "name": "Sprint 42",
+    "status": "ACTIVE"
+  },
+
+  "list_query": {
+    "project_id": 1,
+    "skip": 0,
+    "limit": 50
+  }
+}

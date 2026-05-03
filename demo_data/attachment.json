@@ -1,0 +1,35 @@
+{
+  "_notes": {
+    "list":   "GET    /api/v1/attachments?task_id=1&skip=0&limit=100",
+    "get":    "GET    /api/v1/attachments/{attachment_id}",
+    "create": "POST   /api/v1/attachments",
+    "update": "PATCH  /api/v1/attachments/{attachment_id}",
+    "delete": "DELETE /api/v1/attachments/{attachment_id}"
+  },
+
+  "attachment_create": {
+    "task_id": 1,
+    "file_name": "design_mockup_v1.png",
+    "file_url": "https://s3.amazonaws.com/gazior-bucket/design_mockup_v1.png",
+    "mime_type": "image/png",
+    "size_bytes": 1048576
+  },
+
+  "attachment_create_pdf": {
+    "task_id": 1,
+    "file_name": "requirements.pdf",
+    "file_url": "https://s3.amazonaws.com/gazior-bucket/requirements.pdf",
+    "mime_type": "application/pdf",
+    "size_bytes": 512000
+  },
+
+  "attachment_update_filename": {
+    "file_name": "design_mockup_v1_final.png"
+  },
+
+  "list_query": {
+    "task_id": 1,
+    "skip": 0,
+    "limit": 50
+  }
+}

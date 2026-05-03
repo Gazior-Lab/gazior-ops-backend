@@ -41,6 +41,18 @@ EXPECTED_ROUTE_METHODS = {
     ("POST", "/api/v1/tasks/{task_id}/archive"),
     ("POST", "/api/v1/tasks/{task_id}/unarchive"),
     ("POST", "/api/v1/tasks/bulk/status"),
+    # initiatives
+    ("GET", "/api/v1/initiatives"),
+    ("GET", "/api/v1/initiatives/{initiative_id}"),
+    ("POST", "/api/v1/initiatives"),
+    ("PATCH", "/api/v1/initiatives/{initiative_id}"),
+    ("DELETE", "/api/v1/initiatives/{initiative_id}"),
+    # projects
+    ("GET", "/api/v1/projects"),
+    ("GET", "/api/v1/projects/{project_id}"),
+    ("POST", "/api/v1/projects"),
+    ("PATCH", "/api/v1/projects/{project_id}"),
+    ("DELETE", "/api/v1/projects/{project_id}"),
     # teams
     ("GET", "/api/v1/teams"),
     ("GET", "/api/v1/teams/{team_id}"),
@@ -51,6 +63,42 @@ EXPECTED_ROUTE_METHODS = {
     ("POST", "/api/v1/teams/{team_id}/members"),
     ("PATCH", "/api/v1/teams/{team_id}/members/{user_id}"),
     ("DELETE", "/api/v1/teams/{team_id}/members/{user_id}"),
+    # comments
+    ("GET", "/api/v1/comments"),
+    ("GET", "/api/v1/comments/{comment_id}"),
+    ("POST", "/api/v1/comments"),
+    ("PATCH", "/api/v1/comments/{comment_id}"),
+    ("DELETE", "/api/v1/comments/{comment_id}"),
+    # attachments
+    ("GET", "/api/v1/attachments"),
+    ("GET", "/api/v1/attachments/{attachment_id}"),
+    ("POST", "/api/v1/attachments"),
+    ("PATCH", "/api/v1/attachments/{attachment_id}"),
+    ("DELETE", "/api/v1/attachments/{attachment_id}"),
+    # updates
+    ("GET", "/api/v1/updates"),
+    ("GET", "/api/v1/updates/{update_id}"),
+    ("POST", "/api/v1/updates"),
+    ("PATCH", "/api/v1/updates/{update_id}"),
+    ("DELETE", "/api/v1/updates/{update_id}"),
+    # cycles
+    ("GET", "/api/v1/cycles"),
+    ("GET", "/api/v1/cycles/{cycle_id}"),
+    ("POST", "/api/v1/cycles"),
+    ("PATCH", "/api/v1/cycles/{cycle_id}"),
+    ("DELETE", "/api/v1/cycles/{cycle_id}"),
+    # labels
+    ("GET", "/api/v1/labels"),
+    ("GET", "/api/v1/labels/{label_id}"),
+    ("POST", "/api/v1/labels"),
+    ("PATCH", "/api/v1/labels/{label_id}"),
+    ("DELETE", "/api/v1/labels/{label_id}"),
+    # task histories
+    ("GET", "/api/v1/task-histories"),
+    # task labels
+    ("GET", "/api/v1/task-labels"),
+    ("POST", "/api/v1/task-labels"),
+    ("DELETE", "/api/v1/task-labels"),
 }
 
 

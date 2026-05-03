@@ -1,0 +1,43 @@
+{
+  "_notes": {
+    "list":   "GET    /api/v1/updates?workspace_id=1&skip=0&limit=100&tag=System&department=Engineering",
+    "get":    "GET    /api/v1/updates/{update_id}",
+    "create": "POST   /api/v1/updates",
+    "update": "PATCH  /api/v1/updates/{update_id}",
+    "delete": "DELETE /api/v1/updates/{update_id}"
+  },
+
+  "update_create_full": {
+    "workspace_id": 1,
+    "title": "Platform v2 is now live",
+    "content": "We have successfully rolled out the new platform version. Key changes include:\n- Performance improvements\n- UI refresh\n- New dashboard",
+    "tag": "Launch",
+    "department": "Engineering"
+  },
+
+  "update_create_minimal": {
+    "workspace_id": 1,
+    "title": "System maintenance window",
+    "content": "There will be a scheduled maintenance this Friday at 2AM UTC.",
+    "tag": "System"
+  },
+
+  "update_patch": {
+    "title": "Platform v2.1 is now live",
+    "tag": "Release"
+  },
+
+  "list_query_paginated": {
+    "workspace_id": 1,
+    "skip": 0,
+    "limit": 20
+  },
+
+  "list_query_filtered": {
+    "workspace_id": 1,
+    "skip": 0,
+    "limit": 20,
+    "tag": "Launch",
+    "department": "Engineering"
+  }
+}

@@ -75,10 +75,20 @@ class WorkspaceMemberRepository:
         )
         return result.scalar() or 0
 
+    async def get_count_by_workspace(self, workspace_id: int) -> int:
+        """Get total count of members in a workspace"""
+        result = await self.db.execute(
+            select(func.count(WorkspaceMember.id)).where(
+                WorkspaceMember.workspace_id == workspace_id,
+                WorkspaceMember.deleted_at.is_(None)
+            )
+        )
+        return result.scalar() or 0
+
     async def create(self, member: WorkspaceMember) -> WorkspaceMember:
         """Create a new workspace member"""
         self.db.add(member)
-        await self.db.commit()
+        await self.db.flush()
         await self.db.refresh(member)
         return member
 
@@ -92,7 +102,7 @@ class WorkspaceMemberRepository:
             if hasattr(member, key):
                 setattr(member, key, value)
 
-        await self.db.commit()
+        await self.db.flush()
         await self.db.refresh(member)
         return member
 
@@ -108,7 +118,7 @@ class WorkspaceMemberRepository:
             return None
 
         member.role = role
-        await self.db.commit()
+        await self.db.flush()
         await self.db.refresh(member)
         return member
 
@@ -121,5 +131,5 @@ class WorkspaceMemberRepository:
         member.deleted_at = datetime.now(timezone.utc)
         member.updated_by_id = deleted_by_id
 
-        await self.db.commit()
+        await self.db.flush()
         return True

@@ -1,0 +1,18 @@
+{
+  "_notes": {
+    "list":   "GET    /api/v1/task-labels?task_id=1&skip=0&limit=100",
+    "create": "POST   /api/v1/task-labels",
+    "delete": "DELETE /api/v1/task-labels?task_id=1&label_id=2"
+  },
+
+  "task_label_create": {
+    "task_id": 1,
+    "label_id": 1
+  },
+
+  "list_query": {
+    "task_id": 1,
+    "skip": 0,
+    "limit": 50
+  }
+}

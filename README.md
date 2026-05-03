@@ -121,7 +121,7 @@ This backend follows a **Layered (Clean) Architecture** with strict separation o
                  │
 ┌────────────────▼────────────────────────────────┐
 │  Repository Layer (app/repositories/)           │
-│  - Database queries (SQLAlchemy 2.0)           │
+│  - Database queries (SQLAlchemy 2.0)            │
 │  - CRUD operations                              │
 │  - Data access abstraction                      │
 └────────────────┬────────────────────────────────┘

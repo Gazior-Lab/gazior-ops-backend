@@ -58,7 +58,7 @@ class InvitationRepository:
 
     async def create(self, invitation: Invitation) -> Invitation:
         self.db.add(invitation)
-        await self.db.commit()
+        await self.db.flush()
         await self.db.refresh(invitation)
         return invitation
 
@@ -69,5 +69,5 @@ class InvitationRepository:
         invitation.status = InvitationStatus.REVOKED
         invitation.deleted_at = datetime.now(timezone.utc)
         invitation.updated_by_id = updated_by_id
-        await self.db.commit()
+        await self.db.flush()
         return True

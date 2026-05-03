@@ -43,7 +43,8 @@ class TeamRepository:
         total_result = await self.db.execute(count_query)
         total = total_result.scalar()
 
-        query = query.order_by(Team.created_at.desc()).offset(skip).limit(limit)
+        query = query.order_by(Team.created_at.desc()
+                               ).offset(skip).limit(limit)
         result = await self.db.execute(query)
         teams = result.scalars().all()
 
@@ -52,7 +53,7 @@ class TeamRepository:
     async def create(self, team: Team) -> Team:
         """Persist a new Team instance"""
         self.db.add(team)
-        await self.db.commit()
+        await self.db.flush()
         await self.db.refresh(team)
         return team
 
@@ -66,7 +67,7 @@ class TeamRepository:
             if hasattr(team, key):
                 setattr(team, key, value)
 
-        await self.db.commit()
+        await self.db.flush()
         await self.db.refresh(team)
         return team
 
@@ -78,7 +79,7 @@ class TeamRepository:
 
         team.deleted_at = datetime.now(timezone.utc)
         team.updated_by_id = deleted_by_id
-        await self.db.commit()
+        await self.db.flush()
         return True
 
     async def name_exists_in_workspace(

@@ -1,4 +1,3 @@
-# app/api/endpoints/v1/task.py
 from typing import Dict, Optional, List
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -118,20 +117,10 @@ async def create_task(
         current_user=current_user,
     )
 
-    try:
-        task = await task_service.create_task(
-            task_data=task_data,
-            current_user_id=current_user.id
-        )
-        return task
-    except HTTPException:
-        raise
-    except Exception as e:
-        # Don't expose internal error details to clients
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Failed to create task"
-        )
+    return await task_service.create_task(
+        task_data=task_data,
+        current_user_id=current_user.id
+    )
 
 
 @router.patch("/{task_id}", response_model=TaskResponse)

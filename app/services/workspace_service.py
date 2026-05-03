@@ -4,6 +4,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.repositories.workspace import WorkspaceRepository
 from app.repositories.workspace_member import WorkspaceMemberRepository
+from app.repositories.project import ProjectRepository
+from app.repositories.task import TaskRepository
 from app.models.workspace import Workspace
 from app.models.workspace_member import WorkspaceMember
 from app.schemas.workspace import WorkspaceCreate, WorkspaceUpdate
@@ -16,6 +18,8 @@ class WorkspaceService:
         self.db = db
         self.workspace_repo = WorkspaceRepository(db)
         self.member_repo = WorkspaceMemberRepository(db)
+        self.project_repo = ProjectRepository(db)
+        self.task_repo = TaskRepository(db)
 
     async def get_workspace(self, workspace_id: int) -> Optional[Workspace]:
         """Get a single workspace by ID"""
@@ -311,11 +315,13 @@ class WorkspaceService:
 
     async def get_workspace_stats(self, workspace_id: int) -> Dict[str, Any]:
         """Get workspace statistics (member count, projects, tasks, etc.)"""
-        # This would typically use aggregate queries
-        # For now, returning placeholder
+        member_count = await self.member_repo.get_count_by_workspace(workspace_id)
+        project_count = await self.project_repo.get_count_by_workspace(workspace_id)
+        task_stats = await self.task_repo.get_stats_by_workspace(workspace_id)
+
         return {
-            "total_members": 0,
-            "total_projects": 0,
-            "total_tasks": 0,
-            "total_active_tasks": 0,
+            "total_members": member_count,
+            "total_projects": project_count,
+            "total_tasks": task_stats["total_tasks"],
+            "total_active_tasks": task_stats["total_active_tasks"],
         }

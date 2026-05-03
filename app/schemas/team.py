@@ -5,9 +5,6 @@ from pydantic import BaseModel, Field, ConfigDict
 from app.core.enums.common import TeamMemberRole
 
 
-# ---------------------------------------------------------------------------
-# Team schemas
-# ---------------------------------------------------------------------------
 
 class TeamBase(BaseModel):
     name: str = Field(..., min_length=1, max_length=255)
@@ -41,9 +38,6 @@ class TeamListResponse(BaseModel):
     limit: int
 
 
-# ---------------------------------------------------------------------------
-# TeamMember schemas
-# ---------------------------------------------------------------------------
 
 class TeamMemberBase(BaseModel):
     user_id: int

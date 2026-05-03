@@ -1,0 +1,11 @@
+{
+  "_notes": {
+    "list": "GET /api/v1/task-histories?task_id=1&skip=0&limit=100"
+  },
+
+  "list_query": {
+    "task_id": 1,
+    "skip": 0,
+    "limit": 50
+  }
+}

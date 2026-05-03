@@ -1,0 +1,32 @@
+{
+  "_notes": {
+    "list":   "GET    /api/v1/labels?project_id=1&skip=0&limit=100",
+    "get":    "GET    /api/v1/labels/{label_id}",
+    "create": "POST   /api/v1/labels",
+    "update": "PATCH  /api/v1/labels/{label_id}",
+    "delete": "DELETE /api/v1/labels/{label_id}"
+  },
+
+  "label_create_bug": {
+    "project_id": 1,
+    "name": "Bug",
+    "color": "#FF0000"
+  },
+
+  "label_create_feature": {
+    "project_id": 1,
+    "name": "Feature",
+    "color": "#00FF00"
+  },
+
+  "label_update": {
+    "name": "Enhancement",
+    "color": "#0000FF"
+  },
+
+  "list_query": {
+    "project_id": 1,
+    "skip": 0,
+    "limit": 50
+  }
+}
